@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}사례 추가{% endblock title %}
+
+{% block content %}
+<h3 class="menu-inside"><i class="fa fa-angle-right"></i><a href="#"> 사내게시판</a> <i class="fa fa-angle-right"></i> <a href="{% url 'notice:case_list' %}"> 사례관리 </a><i class="fa fa-angle-right"></i> <a href="#"> 사례 수정 </a></h3>
+<div style="width: 100%; min-height: 40px;"> 
+</div>
+
+<div class="col-lg-12">
+
+    <div class="content-panel row ">
+        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <div class="col-lg-12 article">
+                <div class="article_header" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px">
+                    <h3 style="margin-left: 10px; color: #2a2a2a;"><input type="text" name="title" maxlength="50"
+                            class="form-control" placeholder="제목을 입력하세요" required id="id_title" value="{{post.title}}"></h3>
+                </div>
+                <div class="article_body" style="margin-top: 20px;">
+                    {{form.media}}
+                    {{form.content}}
+                </div>
+                <div class="validate">
+                    <p style="padding-top:0.5em; font-size:0.9em">* 이미지 파일을 끌어다 놓으시거나, 편집기 내 이미지 버튼을 눌러 이미지 파일 선택 후 '서버로 전송' 버튼을 누르시면 본문에 이미지를 넣으실 수 있습니다. (jpg, png, gif 형식만 가능합니다.)</p>
+                </div>
+                <div class="article_info" style="margin-bottom: 10px;">
+                        <span class="label label-default dtlabel"><i class="fa fa-tags"></i> 태그</span>
+                </div>
+                <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                    <p>
+                        <input type="text" class="form-control" name="hashtag" maxlength="50" placeholder="ex) #근태 #업무 #수업" id="id_hashtag" value="{{post.hashtag}}">
+                    </p>
+                </div>
+                <button class="btn btn-primary btn-sm  pull-right in-btn" id="addArr">등록</button>
+                <a class="btn btn-sm pull-right in-btn" href="{% url 'notice:case_list' %}"><i class=" fa fa-arrow-left"></i> 목록</a>           
+             </div>
+
+
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script type="text/javascript">
+
+    var isShow = true; /* 페이지 벗어날때 붙잡기 */
+
+    $(window).on("beforeunload", function () {
+        if (isShow) return '이 페이지를 벗어나면 작성된 내용은 저장되지 않습니다.';
+    });
+
+    $(document).ready(function () {
+        $("#addArr").click(function (e) {
+        if ($("#id_title").val() == '') {
+            swal.fire('제목을 입력하세요.','','warning');
+            e.preventDefault();
+            return false;
+        } else if (CKEDITOR.instances.id_content.getData() == "") {
+            swal.fire('내용을 입력하세요.','','warning');
+            e.preventDefault();
+            return false;
+        } else {
+            isShow = false;
+        }
+    });
+    });
+
+CKEDITOR.replace('id_content',{
+ toolbar: [
+     ['Templates', 'Styles', 'Format', 'Font', 'FontSize'],
+     ['Undo', 'Redo', '-', 'Find', 'Replace'],
+     '/',
+     ['TextColor', 'BGColor', 'Bold', 'Italic', 'Underline', 'Strike', '-', 'Subscript', 'Superscript'],
+     ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+     ['NumberedList', 'BulletedList'],
+     ['Outdent', 'Indent'],
+     ['Youtube', 'Image', 'Table', 'HorizontalRule', 'Smiley'],
+     ['Link', 'Unlink', 'Anchor'],
+     ['Source', 'RemoveFormat', '-', 'Maximize']
+ ],
+ filebrowserImageUploadUrl: '{% url 'ckeditor_upload' %}',
+ imageUploadUrl: '{% url 'ckeditor_upload' %}'
+});
+
+CKEDITOR.on('dialogDefinition', function( ev ) {
+    var diagName = ev.data.name;
+    var dialog = ev.data.definition.dialog;
+    var diagDefn = ev.data.definition;
+
+    if (diagName == 'image') {
+    dialog.on('show', function (obj) {
+        this.selectPage('Upload'); //업로드탭 기본으로
+    });
+    diagDefn.removeContents('advanced'); // 자세히탭 제거
+    diagDefn.removeContents('Link'); // 링크탭 제거
+    }
+
+    if(diagName === 'table') {
+      var infoTab = diagDefn.getContents('info');
+      var width = infoTab.get('txtWidth');
+      width['default'] = "100%";
+    }
+});
+
+</script>
+{% endblock %}

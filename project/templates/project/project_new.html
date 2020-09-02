@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}프로젝트 추가{% endblock title %}
+{% block css %}
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datepicker/css/datepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-daterangepicker/daterangepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-timepicker/compiled/timepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datetimepicker/css/datetimepicker.css' %}" />
+<style>
+    table>tbody>tr>td,
+    table>tbody>tr>th,
+    table>tfoot>tr>td,
+    table>tfoot>tr>th,
+    table>thead>tr>td,
+    table>thead>tr>th {
+        vertical-align: middle;
+        font-size: 1.2rem;
+        white-space: nowrap;
+    }
+
+    span.dtlabel {
+        display: inline-block;
+        width: 50px;
+        height: 19px;
+        line-height: 16px;
+        font-size: 12px;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row ">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>프로젝트 추가</b></h4>
+        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <div class="col-lg-12 article">
+                <div class="article_header" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px">
+                    <h3 style="margin-left: 10px; color: #2a2a2a;"><input type="text" name="title" maxlength="50"
+                            class="form-control" placeholder="프로젝트명을 입력하세요" title="" required id="id_title"></h3>
+                    <div class="article_date">
+                        <p><img src="/media/{{ user.profile.userImg }}" class="img-circle" height="40" width="40">
+                            <b>{{user.username}}</b></p>
+                    </div>
+                </div>
+                <div class="article_target" style="margin-bottom: 10px;">
+                    <p><span class="label label-outline">대상자</span>&nbsp; </p>
+                </div>
+                <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                    <p><input type="hidden" name="targets" class="form-control targets" value="" required
+                            id="id_targets">{% include "accounts/target.html" %}</p>
+                </div>
+                <div class="article_info" style="margin-bottom: 10px;">
+                    <p><span class="label label-outline">기간</span>&nbsp; </p>
+                    <div class="input-group input-large" data-date="2014-01-01" data-date-format="yyyy-mm-dd"
+                        style="width: 100%">
+                        <input type="text" class="form-control dpd1" name="sdate" autocomplete="off" id="id_sdate"
+                            required>
+                        <span class="input-group-addon"> ~ </span>
+                        <input type="text" class="form-control dpd2" name="edate" autocomplete="off" id="id_edate"
+                            required>
+                        <span class="input-group-addon">까지</span>
+                    </div>
+                </div>
+                <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+
+                </div>
+                <div class="article_body" style="margin-top: 20px;">
+                    <p><textarea class="form-control noresize" name="content" id="contact-message" rows="5" data-rule="required"
+                            data-msg="작성해주세요" required></textarea></p>
+                </div>
+                <button type="submit" class="btn btn-theme btn-sm pull-right in-btn" id="addArr">등록</button>
+                        <a class="btn btn-sm pull-right in-btn" href="{% url 'project:list' %}"
+                            onclick="return confirm('목록으로 돌아가시겠습니까?')"><i class="fa fa-arrow-left"> </i> 이전</a>
+                 
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+<script src="{% static 'js/target.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/date.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+<script type="text/javascript"
+    src="{% static 'lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-timepicker/js/bootstrap-timepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/advanced-form-components.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#addArr").click(function (e) {
+            if ($("#id_targets").val() == '') {
+                alert('대상자를 선택해주세요');
+                e.preventDefault();
+            }
+
+        });
+    });
+
+</script>
+{% endblock %}

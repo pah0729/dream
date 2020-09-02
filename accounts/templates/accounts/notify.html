@@ -1,0 +1,123 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>푸시알림 설정방법 | 드림웨어</title>
+    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/gritter/css/jquery.gritter.css' %}" />
+    <link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+    <!-- css for todo -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/to-do.css' %}">
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link href="{% static 'lib/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datepicker/css/datepicker.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-daterangepicker/daterangepicker.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-timepicker/compiled/timepicker.css' %}" />
+    <style> 
+    .agree {float: right; margin:1em 0;}
+    </style>
+</head>
+<body>
+    <div class="col-md-12">
+        <div class="custom-box text-left">
+            <h3 class="menu-inside text-center"><b>Pushbullet 다운로드 및 설정방법</b></h3>
+            <p class="font-size-medium text-red text-center">* 푸시토큰 변경시에도 같은 방법으로 설정하세요.</p>
+            <br>
+            <div class="col-lg-12 mt-30">
+                <ul class="MENUAL">
+                    <li> 
+                        <h4>1. Pushbullet 사이트 접속 및 로그인</h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <a href="https://www.pushbullet.com/#settings" target="_blank" style="color: #337ab7;"><p>https://www.pushbullet.com/</p></a>
+                            </li>
+                            <li>
+                                <p>Pushbullet 사이트 접속 후 오른쪽 상단에 있는
+                                'Sign in' 또는 'sign up with Google' 버튼을 눌러 로그인합니다.</p>
+                                <img src="{%static 'img/manual/1.PNG' %}">
+                            </li>
+                        </ul>                    
+                    </li> 
+                    <li>
+                        <h4>2. Settings에 있는 'create Access Token' 클릭</h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <p>로그인 후 화면 왼쪽 메뉴 맨 아래에 있는 Settings 클릭 후
+                                        'Create Access Token' 버튼을 누릅니다.</p>
+                                <img src="{% static 'img/manual/3.PNG' %}">
+                            </li>
+                        </ul>
+                    </li>  
+                    <li>
+                        <h4>3. Access Token 복사</h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <p>버튼을 누른 후 바로 위에 뜬 검정 상자에 적힌 토큰을 복사합니다.</p>
+                                <img src="{% static 'img/manual/4.PNG' %}">
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>4. 복사한 Access Token 설정</h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <p>마이페이지 우측 '설정 및 관리' 화면의 '푸시토큰 추가' 버튼을 클릭하여 복사한 토큰을 븥여넣고 저장합니다.</p>
+                                <img src="{% static 'img/manual/7.png' %}">
+                            </li>
+                        </ul>
+                    </li>   
+                    <li>
+                        <h4>
+                            5. <a style="color: #337ab7;" href="https://chrome.google.com/webstore/detail/pushbullet/chlffgpmiacpedhhbkiomidkjlcfhogd" target="_blank">Chrome 웹 스토어</a> 접속
+                        </h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <p>다시 왼쪽 메뉴에서 Devices를 누른 후 Chrome을 선택하여 'Chrome 웹 스토어' 에 접속합니다.
+                                </p>
+                                <img src="{% static 'img/manual/5.PNG' %}">
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>6. Chrome에 추가</h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <p>'Chrome에 추가' 버튼을 눌러 Pushbullet을 추가합니다.</p>
+                                <img src="{% static 'img/manual/6.PNG' %}">
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h4>6. 모바일 애플리케이션 추가 </h4>
+                        <ul class="MENUAL_l">
+                            <li>
+                                <p>웹 뿐만 아니라 모바일에서도 알람을 받을 수 있습니다. <br> 안드로이드 사용자는 구글플레이, 아이폰 사용자는 앱스토어에서 'Pushbullet'을 다운받아 사용하시면 됩니다.</p>
+                            </li>
+                        </ul>
+                    </li>         
+                </ul> 
+            </div>
+        </div>  
+    </div>
+    <footer class="site-footer">
+        <div class="text-center">
+            <div class="credits mt-10 mb-10">
+                &copy; 2019-2020. <strong>GLOCAL DREAM ACADEMY</strong> All Rights Reserved.
+            </div>
+            <a href="#" class="go-top">
+                <i class="fa fa-angle-up"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="{% static 'lib/jquery.scrollTo.min.js' %}"></script>
+</body>
+</html>

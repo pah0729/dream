@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load accounts %}
+{% block title %}조직도{% endblock title %}
+{% block css %}
+{% endblock css %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="content-panel">
+            <h4 class="mb-30 menu-inside text-left text-gray"><b>조직도</b></h4>
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div id="treeview" class=""></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class='modal fade' id='layerpop'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-body'>
+                <button type="button" class="close" data-dismiss="modal" style="color: #2a2a2a;">×</button>
+                <div class="custom-box">
+                    <div class="text-center">
+                        <div style="width: 100px; height: 125px; overflow: hidden; display: inline-block;">
+                            <img src="" style="width: 100px; height: auto;">
+                        </div>
+                    </div>
+                    <a class="text-center font-weight-bold text-gray"><span class="label label-outline" id='modal-team'></span></a><br>
+                    <a class="text-center font-weight-bold text-gray" style="font-size: 18px;"><span id="modal-name"></span> <span class="font-size-medium" id='modal-position'></span></a>
+                    <div style="padding: 10px;">
+                        <hr style="margin-top: 0; margin-bottom: 0; border-top: 1px dotted #aaaaaa;">
+                    </div>
+                    <div class="text-left">
+                        <div class="row">
+                            <div class="col-md-6 border-right">
+                                <h6><a class="">연락처</a></h6>
+                                <p><a href="" id='modal-phone'></a></p>
+                            </div>
+                            <div class="col-md-6 border-right">
+                                <h6><a class="">구글이메일</a></h6>
+                                <p id='modal-gmail' style="cursor: default;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+{% get_user_org_list as user_org_list %}
+{{ user_org_list|json_script:'user_org_list' }}
+
+<script src="{% static 'lib/bootstrap-treeview-master/public/js/bootstrap-treeview.js' %}"></script>
+<script src="{% static 'lib/bootstrap-treeview-master/dist/bootstrap-treeview-init.js' %}"></script>
+<script>
+    var orgData = [
+        {
+        text: '교육운영센터',
+        href: '#parent1',
+        icon: ' ',
+        backColor: "#fafafa",
+        nodes: [
+            {
+            text: '장석민 센터장',
+            href: 'orgchart.html#layerpop',
+            {% for i in user %}
+                {% if i.position.name == '센터장' %}
+            m_class: '{{i.team.name}} user',
+            m_img: '{{i.userImg}}',
+            m_name: '{{i.user.username}}',
+            m_team: '{{i.team}}',
+            m_posi: '{{i.position}}',
+            m_phone: '{{i.phone}}',
+            m_mail: '{{i.email_google}}',
+            {% endif %}
+                {% endfor %}
+            icon: 'ti-user',
+            },
+            {
+            text: '과학교육개발팀',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '과학팀' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+            {
+            text: '코딩교육개발팀',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '코딩팀' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+            {
+            text: '공예교육개발팀',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '공예팀' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+            {
+            text: '요리교육개발팀',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '요리팀' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+        ]
+        },
+        {
+        text: '사무국',
+        href: '#parent2',
+        icon: ' ',
+        backColor: "#fafafa",
+        nodes: [
+            {
+            text: '이남정 사무국장',
+            href: 'orgchart.html#layerpop',
+            {% for i in user %}
+                {% if i.position.name == '사무국장' %}
+            m_class: '{{i.team.name}} user',
+            m_img: '{{i.userImg}}',
+            m_name: '{{i.user.username}}',
+            m_team: '{{i.team}}',
+            m_posi: '{{i.position}}',
+            m_phone: '{{i.phone}}',
+            m_mail: '{{i.email_google}}',
+            {% endif %}
+                {% endfor %}
+            icon: 'ti-user',
+            },
+            {
+            text: '교육운영기획실',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '교육운영기획실' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+            {
+            text: '경영지원팀',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '경영지원팀' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+            {
+            text: '교육지원실',
+            href: '#child2',
+            icon: ' ',
+            color: "#75aede",
+            backColor: "#fafafa",
+            state: {
+                expanded: true
+            },
+            nodes : [
+                {% for i in user %}
+                {% if i.team.name == '교육지원실' %}
+                {
+                    text: '{{i.user}} {{i.position|cut:"사원"}}',
+                    href: 'orgchart.html#layerpop',
+                    m_class: '{{i.team.name}} user',
+                    m_img: '{{i.userImg}}',
+                    m_name: '{{i.user.username}}',
+                    m_team: '{{i.team}}',
+                    m_posi: '{{i.position}}',
+                    m_phone: '{{i.phone}}',
+                    m_mail: '{{i.email_google}}',
+                    icon: 'ti-user',
+                },
+                {% endif %}
+                {% endfor %}
+            ]
+            },
+        ]
+        },
+        {
+        text: 'SI팀',
+        href: '#parent3',
+        icon: ' ',
+        color: "#75aede",
+        backColor: "#fafafa",
+        nodes : [
+            {% for i in user %}
+            {% if i.team.name == 'SI팀' %}
+            {
+                text: '{{i.user}} {{i.position|cut:"사원"}}',
+                href: 'orgchart.html#layerpop',
+                m_class: '{{i.team.name}} user',
+                m_img: '{{i.userImg}}',
+                m_name: '{{i.user.username}}',
+                m_team: '{{i.team}}',
+                m_posi: '{{i.position}}',
+                m_phone: '{{i.phone}}',
+                m_mail: '{{i.email_google}}',
+                icon: 'ti-user',
+            },
+            {% endif %}
+            {% endfor %}
+        ]
+        },
+    ];
+
+    $('#treeview').treeview({
+        
+        expandIcon: 'ti-angle-right',
+        onhoverColor: "rgba(0, 0, 0, 0.05)",
+        selectedBackColor: "#03a9f3",
+        collapseIcon: 'ti-angle-down',
+        nodeIcon: 'fa fa-bookmark',
+        enableLinks: true,
+        data: orgData
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var user_org_list = JSON.parse($('#user_org_list').text());
+
+    $('.treeview').on('click', '.user', function (e) {
+
+        // $("#layerpop").modal('show');
+        $("#modal-name").html($(this).attr('data-name').trim());
+        $('#modal-team').html($(this).attr('data-team').trim());
+        $('#modal-position').html($(this).attr('data-position').trim());
+        $('#modal-gmail').html($(this).attr('data-gmail').trim());
+        // $('#modal-mail').html($(this).attr('data-mail').trim());
+        $('#modal-phone').html($(this).attr('data-phone').trim());
+        $('#modal-phone').attr('href', 'tel:'+$(this).attr('data-phone').trim())
+        $(".modal-body img").attr('src', '/media/' + $(this).attr('data-img').trim());
+
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}프로젝트 수정{% endblock title %}
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datepicker/css/datepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-daterangepicker/daterangepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-timepicker/compiled/timepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datetimepicker/css/datetimepicker.css' %}" />
+<style>
+table>tbody>tr>td,table>tbody>tr>th, 
+table>tfoot>tr>td,table>tfoot>tr>th,
+table>thead>tr>td, table>thead>tr>th {vertical-align: middle;font-size:1.2rem; white-space:nowrap; }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row ">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>프로젝트 수정</b></h4>
+            <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <div class="col-lg-12 article">
+                    <div class="article_header" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px">
+                        <h3 style="margin-left: 10px; color: #2a2a2a;"><input type="text" name="title" maxlength="50"
+                                class="form-control" placeholder="프로젝트명을 입력하세요" title="" required id="id_title" value="{{post.title}}"></h3>
+                        <div class="article_date">
+                            <p><img src="/media/{{ user.profile.userImg }}" class="img-circle" height="40" width="40">
+                                <b>{{user.username}}</b></p>
+                        </div>
+                    </div>
+                    <div class="article_target" style="margin-bottom: 10px;">
+                        <p><span class="label label-outline">대상자</span>&nbsp; </p>
+                    </div>
+                    <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                        <p><input type="hidden" name="targets" class="form-control targets" value='{{post.targets}}' required id="id_targets">
+                            <select id='example-example-enableFiltering-enableClickableOptgroups' multiple='multiple'>
+                                    
+                                    {% for team in teams %}
+                                    <optgroup label='{{team.name}}'>
+                                        {% for item in target %}
+                                            {% if team.name == item.team.name %}
+                                            <option name="checkbox_name" value='{{item.user}}'>{{item.user}}</option>
+                                               
+                                            {% endif %} 
+                                        {% endfor %} 
+                                    </optgroup> 
+                                    {% endfor %}
+                                    </select></p>
+                    </div>
+                    <div class="article_info" style="margin-bottom: 10px;">
+                        <p><span class="label label-outline">기간</span>&nbsp; </p>
+                        <div class="input-group input-large" data-date="2014-01-01" data-date-format="yyyy-mm-dd"
+                            style="width: 100%">
+                            <input type="text" class="form-control dpd1" name="sdate" autocomplete="off" id="id_sdate" value="{{post.sdate|date:'Y-m-d'}}"
+                                required>
+                            <span class="input-group-addon"> ~ </span>
+                            <input type="text" class="form-control dpd2" name="edate" autocomplete="off" id="id_edate" value="{{post.edate|date:'Y-m-d'}}"
+                                required>
+                            <span class="input-group-addon">까지</span>
+                        </div>
+                    </div>
+                    <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+    
+                    </div>
+                    <div class="article_body" style="margin-top: 20px;">
+                        <p><textarea class="form-control noresize" name="content" id="contact-message" rows="5" data-rule="required"
+                                data-msg="작성해주세요" required>{{post.content}}</textarea></p>
+                    </div>
+                    <button type="submit" class="btn btn-theme btn-sm pull-right in-btn" id="addArr">수정</button>
+                            <a class="btn btn-sm pull-right in-btn" href="{% url 'project:todo_list' pk %}"><i class="fa fa-arrow-left"> </i> 취소</a>
+                </div>
+            </form>
+    </div>
+</div>    
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+
+<script type="text/javascript" src="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/date.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+<script type="text/javascript"
+    src="{% static 'lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-timepicker/js/bootstrap-timepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/advanced-form-components.js' %}"></script>
+<script>
+
+var targets = [] ; // 모드 선택 요소를 넣을 배열 
+var selectTarget = []; // 중복을 제거하고 선택된 요소를 넣을 배열
+$(document).ready(function() {
+    $('#example-example-enableFiltering-enableClickableOptgroups').multiselect({
+        enableClickableOptGroups: true,
+        enableCollapsibleOptGroups: true,
+        enableFiltering: true,
+        includeSelectAllOption: true
+    });
+    $(".multiselect-selected-text ").html("추가선택");
+    var a = $(".targets").val();
+    c = a.split(',');
+
+    $('.checkbox input').each(function() {
+        for (var i in c){
+            if(this.value == c[i]){ //값 비교
+            this.checked = true; //checked 처리
+}
+}
+});
+
+    selectTarget.push(a);
+
+        $("#addArr").click(function(e){
+
+            $("select").change(function(){
+                if ( $("select option:selected") ){
+                $("select option:selected").each(function(){             
+                    targets.push ( $(this).text()+"") ; 
+                    $.each(targets, function(i, el){
+                        if($.inArray(el, selectTarget) === -1){
+                        selectTarget.push(el);
+                        }
+                    });
+                });
+            }
+            }).trigger("change");
+            
+            var b = $("#id_targets").val(selectTarget);
+            selectTarget.append(b);
+        }) ; 
+       
+
+        $('.multiselect-native-select .btn-group, button').addClass('btn-block');
+    }); 
+</script>   
+{% endblock %}

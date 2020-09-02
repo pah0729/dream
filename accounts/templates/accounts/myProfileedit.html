@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}개인정보 변경{% endblock title %}
+{% block content %}
+<div class="profile">
+    <div class="col-lg-12">
+        <div class="row custom-box">
+            <h4 class="mb-30 menu-inside text-left text-gray"><b>개인정보 변경</b></h4>
+            <div class="col-md-5 centered"> 
+                <div class="profile-pic">
+                    <p><img src="/media/{{ user.profile.userImg }}" ></p>
+                    <p><img id="target"></p>
+                    <span style="margin-top:50px"><b>미리보기</b></span>
+                </div>
+            </div>
+            <div class="col-md-6 profile-text text-left">
+                <form class="form-horizontal style-form" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                    <p><b>프로필이미지</b><br>{{form.userImg}}<b class="text-red font-size-normal">* 프로필 이미지는 증명사진으로 업로드하세요.</b></p>
+                    <p><b>구글이메일</b>&nbsp; {{form.email_google}}</p>
+                    <p><b>개인이메일</b>&nbsp; {{form.email}}</p>
+                    <p><b>연락처</b>&nbsp; {{form.phone}}</p>
+                    <p><b>비상연락처</b>&nbsp; {{form.emergency_phone}}</p>
+                    <p><b>등본상주소</b>&nbsp; {{form.address}}</p>
+                    <p><b>실거주주소</b>&nbsp; {{form.really_address}}</p>
+                    <p> <button class="btn btn-theme btn-block mt-30"> 저장</button></p>
+                </form>
+                <p><a href="{% url 'accounts:profile' %}"><button class="btn btn-default btn-block" style="margin-bottom: 1em">취소</button></a> </p>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>  
+</div> 
+{% endblock content %}
+{% block scripts %}
+{% load static %}
+<script>
+    
+$( document ).ready( function() {  
+    $("#id_email_google").prop("readonly", true);
+    $(".profile-pic p:nth-child(2) ").css("display","none");
+    $('input#id_userImg').addClass('src');
+    var file = document.querySelector('.src');
+    $("#id_phone").addClass('phone');
+   
+file.onchange = function () { 
+    var fileList = file.files ;
+    
+    // 읽기
+    var reader = new FileReader();
+    reader.readAsDataURL(fileList [0]);
+
+    //로드 한 후
+    reader.onload = function  () {
+        
+        //로컬 이미지를 보여주기
+        document.querySelector('#target').src = reader.result;
+        
+        //썸네일 이미지 생성
+        var tempImage = new Image(); //drawImage 메서드에 넣기 위해 이미지 객체화
+        tempImage.src = reader.result; //data-uri를 이미지 객체에 주입
+        tempImage.onload = function() {
+            //리사이즈를 위해 캔버스 객체 생성
+            var canvas = document.createElement('canvas');
+            var canvasContext = canvas.getContext("2d");
+        
+            //이미지를 캔버스에 그리기
+            canvasContext.drawImage(this, 0, 0, 100, 100);
+            $(".profile-pic p:nth-child(1) ").css("display","none"); 
+            $(".profile-pic p:nth-child(2) ").css("display","block");
+        };
+    }; 
+}; 
+
+
+$(".style-form input, .style-form select").addClass('form-control');
+$(".style-form input[type=checkbox]").removeClass('form-control');
+
+
+});   
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load hashtag %}
+{% block title %}{{ post.title }}{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+
+{% endblock %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row">
+        <div class="col-lg-12 article">
+            <div class="article_header" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px">
+                <p>
+                    <div>
+                        <div style="width: 50px; height: 50px; overflow: hidden; display: inline-block; position: absolute; left: 20px; top: 17px;">
+                            <img src="{{post.user.userImg.url}}" style="width: 50px; height: auto;">
+                        </div>
+                        <div style="display: inline-block; margin-left: 70px;">
+                            <div>
+                                <h4 class="font-weight-bold" style="margin-left: 0; color: #2a2a2a;">
+                                    {% if post.important == "높음" %}
+                                    <span class="label label-danger font-size-medium td-middle">중요공지</span>
+                                    {% endif %}
+                                    {{ post.title }}
+                                </h4>
+                            </div>
+                            <div>
+                                <span class="font-weight-bold" style="padding-right: 10px;">{{post.user}}</span> 
+                                <span class="font-size-normal" style="padding-right: 10px;">{{post.user.team.name}}</span> 
+                                <span class="font-size-normal">{{post.date | date:"Y-m-d G:i:s"}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="article_target">
+                {% if post.targets == '전체선택' %}
+                <p><span class="label label-outline">수신</span> 전 사원</p>
+                {% else %}
+                <p><span class="label label-outline">수신</span> {{ post.targets }}</p>
+                {% endif %}
+            </div>
+            <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                <p>
+                    <span class="font-size-normal">읽은사람 <b class="text-info">{{readSttst}}</b>명 ({{readPercent}}%)</span> 
+                    <span>
+                        <button type="button" class="btn btn-xs btn-default" data-target="#layerpop"
+                    data-toggle="modal" id="btn"> <i class=" fa fa-angle-right"></i> </button>
+                </span>
+                </p>
+            </div>
+            <div class="article_body" style="margin-top: 20px; overflow-x: auto">
+                {{ post.content|safe|escape }}
+            </div>
+            <div class="article_tag" style="margin-top: 20px;">
+                <p>
+                    {% if post.hashtag %}
+                    &nbsp;{{ post|add_link|safe }}
+                    {% else %}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="article_file" style="margin-top: 20px;">
+                {% if post.file1 or post.file2 or post.file3 or post.file4 or post.file5 %}
+                <p style="margin-top: 20px;"><span class="label label-outline">첨부파일</span></p>
+                {% endif %}
+                {% if post.file1 %}
+                <p><a id="file1" href="{{ post.file1.url }}" download><i
+                            class=" fa fa-download"></i>&nbsp;{{ post.file1 }}</a></p>
+                {% endif %}
+                {% if post.file2 %}
+                <p><a id="file2" href="{{ post.file2.url }}" download><i
+                            class=" fa fa-download"></i>&nbsp;{{ post.file2 }}</a></p>
+                {% endif %}
+                {% if post.file3 %}
+                <p><a id="file3" href="{{ post.file3.url }}" download><i
+                            class=" fa fa-download"></i>&nbsp;{{ post.file3 }}</a></p>
+                {% endif %}
+                {% if post.file4 %}
+                <p><a id="file4" href="{{ post.file4.url }}" download><i
+                            class=" fa fa-download"></i>&nbsp;{{ post.file4 }}</a></p>
+                {% endif %}
+                {% if post.file5 %}
+                <p><a id="file5" href="{{ post.file5.url }}" download><i
+                            class=" fa fa-download"></i>&nbsp;{{ post.file5 }}</a></p>
+                {% endif %}
+            </div>
+
+            <div class="article_button mt-30">
+                <a class="btn btn-default btn-sm in-btn pull-right list_back" >이전</a>
+                {% if request.user == post.user.user %}
+                <a class="btn btn-danger btn-sm in-btn pull-right notice_remove">삭제</a>
+                {% endif%}
+            </div>
+            
+            
+            <table class="table">
+                <tr>
+                    <form method="POST">{% csrf_token %}
+                        <td style="padding-left: 0; padding-right: 0; padding-top: 20px"><textarea type="text" name="content" class="form-control noresizeall" required id="id_content" style="border-radius:4px 0 0 4px; padding-right:0 "
+                            autocomplete="off"></textarea></td>
+                            <td width="10%" style="padding-left: 0; padding-right: 0; padding-top: 20px;"><button type="submit" class="btn btn-default btn-md pull-right btn-block" style="height: 54px; width: 100%;">등록</button></td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="font-size-normal"><b class="text-info">{{post.commentCount}}</b>개의 댓글</p>
+            {% for comment in detail reversed %}
+            <div class="comment" style="min-height: 57px;">
+                <p>
+                    <div style="padding-top: 5px;">
+                        <div style="width: 40px; height: 40px; overflow: hidden; display: inline-block; position: absolute; left: 25px; margin-top: 3px;">
+                            <img src="{{comment.user.userImg.url}}" style="width: 40px; height: auto;">
+                        </div>
+                        <div style="display: inline-block; margin-left: 70px;">
+                            <div>
+                                <span class="font-weight-bold" style="padding-right: 5px;">{{comment.user}}</span>
+                                <span class="font-size-normal" style="padding-right: 10px;">{{comment.user.team.name}}</span>
+                                <span class="font-size-medium" style="padding-right: 10px;">{{comment.date | date:"Y-m-d G:i:s"}}</span>
+                                {% if comment.user.user.profile == request.user.profile %}
+                                <span>
+                                    <button class="btn btn-default pull-right btn-xs font-size-small font-weight-bold comment_remove" value="{% url 'notice:remove_comment' comment.pk %}">x</button>
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span>
+                                    {{ comment.content | linebreaksbr }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="layerpop">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" style="color: #2a2a2a;">×</button>
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="active">
+                            <a data-toggle="tab" href="#overview">읽음</a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#edit">읽지않음</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /panel-heading -->
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div id="overview" class="tab-pane active">
+                            <div class="row">
+                                <div class="col-lg-12 detailed" style="overflow-y:auto; height:20em;">
+                                    <table>
+                                        {% for post in aa %}
+                                        <tr>
+                                            <td class="td-middle" style="padding: 2px;">
+                                                <div style="width: 35px; height: 35px; overflow: hidden;">
+                                                    <img src="{{post.user.userImg.url}}" style="width: 35px; height: auto;">
+                                                </div>
+                                            </td>
+                                            <td class="td-middle" style="padding-left:18px; padding: 2px;">
+                                                <a class="font-size-normal">{{ post.user }}</a> <span class="font-size-medium text-gray">{{post.user.team.name}}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="edit" class="tab-pane">
+                            <div class="row">
+                                <div class="col-lg-12 detailed" style="overflow-y:auto; height:20em;">
+                                    <table>
+                                        {% for post in ac %}
+                                        <tr>
+                                            <td class="td-middle" style="padding: 2px;">
+                                                <div style="width: 35px; height: 35px; overflow: hidden;">
+                                                    <img src="{{post.user.userImg.url}}" style="width: 35px; height: auto;">
+                                                </div>
+                                            </td>
+                                            <td class="td-middle" style="padding-left:18px; padding: 2px;">
+                                                <a class="font-size-normal">{{ post.user }}</a> <span class="font-size-medium text-gray">{{post.user.team.name}}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    $("#btn").click(function () {
+        status = $("#listView").css("display");
+        if (status == "none") {
+            $("#listView").css("display", "");
+        } else {
+            $("#listView").css("display", "none");
+        }
+    });
+
+    $("tbody td:nth-child(even) ").addClass("numeric");
+    $("table, thead").addClass("cf");
+    
+    $(".article_body table").css({'width':'100%'});
+
+    $(".notice_remove").bind("click", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                  title: '공지를 삭제하시겠습니까?',
+                  text: '',
+                  type: 'question',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: '예',
+                  cancelButtonText: '아니오'
+            }).then(function (result) {
+                  if (result.value) {
+                    window.location.href="{% url 'notice:remove' post.pk %}"
+                  }
+            })
+      });
+
+      $(".comment_remove").bind("click", function (e) {
+          var url = $(this).val();
+          e.preventDefault();
+            Swal.fire({
+                  title: '댓글을 삭제하시겠습니까?',
+                  text: '',
+                  type: 'question',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: '예',
+                  cancelButtonText: '아니오'
+            }).then(function (result) {
+                  if (result.value) {
+                    window.location.href=""+url+""
+                  }
+            })
+      });
+
+</script>
+{% endblock %}

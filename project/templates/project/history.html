@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}프로젝트 히스토리{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="row mt mb content-panel" style="text-align: center">
+    <h4 class="mb-30 menu-inside text-left text-gray"><b>프로젝트 히스토리</b></h4>
+        <div class="col-md-12" style="text-align: center">
+        <section id="no-more-tables">
+            <div class="pull-right mb-30">
+                <form method="GET">
+                    <div class="input-field">
+                        <input class="pull-left" type="text" name="search" value="{{ request.GET.search }}" style="padding:3.6px 0; margin-right: 5px;">
+                        <button class="pull-left btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
+                    <table class="table table-hover table-condensed" id="hidden-table-info" style="text-align: center">
+                        <thead class="cf">
+                            <tr>
+                                <th>작성자</th>
+                                <th class="numeric">내용</th>
+                                <th class="numeric">대상자</th>
+                                <th class="numeric">시작일</th>
+                                <th class="numeric">종료일</th>
+                                <th class="numeric">중요도</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in list %}
+                            <tr>
+                                <td class="numeric" data-title="작성자">{{ post.user }}</td>
+                                <td class="numeric font-size-medium" data-title="내용" style="word-break:break-all">{{ post.content }}</td>
+                                <td class="numeric font-size-medium" data-title="대상자">{{ post.targets }}</td>
+                                <td class="numeric font-size-normal" data-title="시작일">{{ post.sdate }}</td>
+                                <td class="numeric font-size-normal" data-title="종료일">{{ post.edate }}</td>
+                                <td class="numeric" data-title="취소">{{ post.important }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if list.has_other_pages %}
+                    <ul class="pagination">
+                      {% if list.has_previous %}
+                      <li><a href="?page={{ list.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">이전</a>
+                      </li>
+                      {% else %}
+                      <li class="disabled"><span>이전</span></li>
+                      {% endif %}
+                      {% for i in page_range %}
+                      {% if list.number == i %}
+                      <li class="active"><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a></li>
+                      {% else %}
+                      <li><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a></li>
+                      {% endif %}
+                      {% endfor %}
+                      {% if list.has_next %}
+                      <li><a href="?page={{ list.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">다음</a>
+                      </li>
+                      {% else %}
+                      <li class="disabled"><span>다음</span></li>
+                      {%endif %}
+                    </ul>
+                    {%endif%}
+                </section>
+            </div>
+</div>
+  
+    {% endblock content %}

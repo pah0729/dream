@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}업무 자료 관리{% endblock title %}
+{% block css %}
+<style>
+.menual li{list-style-type:disc !important;margin-left: 1.5em;}
+</style>
+{% endblock %}
+{% block content %}
+<h3 class="menu-inside" ><i class="fa fa-angle-right"></i> <a href="#" > 업무 자료 관리 </a></h3>
+<div class="row ">
+    <div class="col-lg-8 ">
+        <div class="form-panel">
+            <h4 class="mb"><i class="fa fa-angle-right"></i> 바로가기 </h4>
+        
+                <a class="btn btn-default  "href="https://drive.google.com/drive/folders/17SqUr4aW9NUcQMP9ePOVlZjVPZ_gaZeN" target="_blank">
+                    <i class="fa fa-google-plus"></i>
+                    <span>GOOGLE DRIVE</span>
+                </a>
+                <a class="btn btn-default " href="http://glocal.ipdisk.co.kr" target="_blank">
+                    <i class="fa fa-folder"></i>
+                    <span>NAS (웹 폴더)</span>
+                </a>
+        </div>
+    </div>
+    <div class="col-lg-4 ">
+        <div class="custom-box">
+        <h4 class="mb"><i class="fa fa-angle-right"></i> 파일 관리 매뉴얼</h4>
+            <a class="btn btn-default btn-mb btn-block " href="https://drive.google.com/open?id=1OIUfYQ2h6RvgENAHB_EzFpbHs7-kUCf28m3GBZa4pYA" target="_blank"> 
+                <span>파일 관리 매뉴얼 보기 </span>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="custom-box">
+            <div class="panel-heading">
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="active">
+                    <a data-toggle="tab" href="#overview" >GOOGLE DRIVE 사용 시 주의사항</a>
+                    </li>
+                    <li>
+                    <a data-toggle="tab" href="#edit">NAS (웹 폴더) 사용 시 주의사항</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /panel-heading -->
+            <div class="panel-body">
+                <div class="tab-content" style="font-size: 16px;">
+                    <div id="overview" class="tab-pane active">
+                        <div class="row">
+                            <div class="col-lg-12 detailed">
+                                <ul class="menual" style="padding-left: 0px;">
+                                    <li><span>업무 관련 문서(자료)는 지정된 폴더 이외 저장 매체에 저장하실 수 없습니다.</span></li>
+                                    <li><span>업무 관련 문서(자료)는 절대 외부에 유출해선 안됩니다.</span></li>
+                                    <li><span>구글 드라이브 폴더 및 문서 생성 시 '글로컬업무폴더' 내에서만 생성해주세요. </span></li>
+                                    <li><span>구글 드라이브 폴더 및 문서 생성 시 소유자는 '장석민(센터장님)'으로 변경해주세요.</span></li>
+                                    <li><span>자세한 사항은 '파일 관리 매뉴얼'을 참고해주세요. </span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="edit" class="tab-pane">
+                        <div class="row">
+                            <div class="col-lg-12 detailed">
+                                <ul class="menual" style="padding-left: 0px;">
+                                    <li><span>NAS는 반드시 구글 크롬 웹 브라우저를 사용하셔야 합니다. [<a href="https://www.google.com/intl/ko/chrome/"
+                                                target="_blank"><b>구글 크롬 다운로드</b></a>]</span></li>
+                                    <li><span>업무 관련 문서(자료)는 지정된 폴더 이외 저장 매체에 저장하실 수 없습니다.</span></li>
+                                    <li><span>업무 관련 문서(자료)는 절대 외부에 유출해선 안됩니다.</span></li>
+                                    <li><span>NAS 개인 작업 폴더는 개인 노트북 자료 손실에 대비한 백업 공간입니다.</span></li>
+                                    <li><span>개인 작업 폴더 안의 업무와 관련되어 작성이 완료된 파일은 GOOGLE DRIVE에 올리거나 NAS의 관련 폴더로 이동시켜주세요. </span> </li>
+                                    <li><span>적은 양의 파일을 올릴 때는 해당 파일을 드래그하여 업로드 하시면 되고,<br>많은 양의 파일이나 폴더 전체를 업로드 하고싶다면 폴더들을 선택해 .zip 파일로
+                                            압축 후 드래그하여 업로드 후 <b>압축해제</b> 하시면 됩니다.</span></li>
+                                    <li><span>NAS 사용 중 500 internal error 화면이 보일경우, 새로고침을 하신 후 다시 시도해주세요.</span></li>
+                                    <li><span>자세한 사항은 '파일 관리 매뉴얼'을 참고해주세요.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %} 

@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% block title %}마이페이지{% endblock title %}
+{% block content %}
+<div class="col-md-12">
+    <div class="col-md-6">
+        <div class="custom-box">
+            <h4 class="mb-30 menu-inside text-left text-gray"><b>개인정보</b></h4>
+            <div class="text-center">
+                <div style="width: 100px; height: 125px; overflow: hidden; display: inline-block;">
+                    <img src="{{profile.userImg.url}}" style="width: 100px; height: auto;">
+                </div>
+            </div>
+            <h6 class="text-center font-weight-bold text-gray"><span class="label label-outline">{{profile.team.name}}</span></h6>
+            <h4 class="text-center font-weight-bold text-gray" style="font-size: 18px;">{{profile.user.username}} <span class="font-size-medium">{{profile.position.name}}</span></h4>
+            <p><a href="{% url 'annual:datemanage' profile.pk %}"><span class="label label-inverse">잔여 연차 : {{annualtotal|cut:".0"}} 일</span></a></p>
+            <div style="padding: 10px;">
+                <hr style="margin-top: 0; margin-bottom: 0; border-top: 1px dotted #aaaaaa;">
+            </div>
+            <div class="text-left">
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <h6><a class="">입사일</a></h6>
+                        <p>{{profile.entry_date|default:"-"}}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><a class="">사번</a><small class="text-red font-size-small"> * NAS 로그인 아이디로 사용됩니다.</small></h6>
+                        <p>{{profile.userNum|default:"-"}}</p>
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <h6><a class="">연락처</a></h6>
+                        <p>{{profile.phone|default:"-"}}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><a class="">비상연락처</a></h6>
+                        <p>{{profile.emergency_phone|default:"-"}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <h6><a class="">구글이메일</a></h6>
+                        <p>{{profile.email_google|default:"-"}}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><a class="">개인이메일</a></h6>
+                        <p>{{profile.email|default:"-"}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <h6><a class="">등본상주소</a></h6>
+                        <p>{{profile.address|default:"-"}}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><a class="">실거주주소</a></h6>
+                        <p>{{profile.really_address|default:"-"}}</p>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <hr style="margin-top: 0; margin-bottom: 0; border-top: 1px dotted #aaaaaa;">
+            </div>
+            <p>
+                <a href="{% url 'accounts:modified' %}">
+                    <button class="btn btn-md btn-default"><i class="fa">개인정보 변경</i></button>
+                </a>
+                <a href="{% url 'accounts:changepw' %}">
+                    <button class="btn btn-default">패스워드 변경</button>
+                </a> 
+            </p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="custom-box">
+            <h4 class="mb-30 menu-inside text-left text-gray"><b>설정 및 관리</b></h4>
+            <div class="text-left">
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <h6><a class="">푸시알림 수신설정</a></h6>
+                        <label class="checkbox text-left switchzoom" style="margin-left: 20px; line-height: 23px;">
+                            {% if profile.notifySettings == True %}
+                            <input type="checkbox" class="on" checked> 수신
+                            {% else %}
+                            <input type="checkbox" class="on"> 수신
+                            {% endif %}
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><a class="">푸시토큰 설정</a></h6>
+                        <button class="btn btn-default btn-sm " data-target="#layerpop" data-toggle="modal">푸시토큰 추가</button>
+                        {% if not profile.pushToken  %}
+                        <p class="font-size-medium font-weight-bold text-red mt-10">* 푸시토큰 미등록 상태입니다.</p>
+                        {% else %}
+                        <p class="font-size-medium font-weight-bold text-info mt-10">* 푸시토큰이 등록되어있습니다.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <hr style="margin-top: 0; margin-bottom: 0; border-top: 1px dotted #aaaaaa;">
+            </div>
+            <a aria-expanded="false" onclick="window.open('{% url 'accounts:notify' %}','window_name','width=800,height=700,location=no,status=no,scrollbars=yes');">
+                <button class="btn btn-md btn-default btn-block"><i class="fa">푸시알림 설정방법</i></button>
+            </a>
+        </div>
+    </div>
+</div>
+<!-- 푸시토큰설정 모달 -->
+<div class="modal fade" id="layerpop">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h4 class="modal-title"> 푸시토큰(AccessToken) 추가 </h4>
+            </div>
+            <!-- <form method ="POST">{% csrf_token %} -->
+                <div class="modal-body">
+                    <p>
+                        <label for="content">AccessToken</label> <input type="text" class="form-control" name="pushToken" id="pushToken" value="{{user.profile.pushToken}}"> 
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-theme" id="tokenSave">저장</button>
+                </div>
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $(".switchzoom").on('click',this,function(e){
+        // e.preventDefault();
+        var setting = $("input:checkbox[class='on']").prop("checked"); 
+            if( setting == false){
+                setting = "False";
+            }else{
+                setting = "True";
+            }        
+        $.ajax({
+            url: "{% url 'accounts:profile' %}", 
+            type: "POST",
+            data: {'type': 'set', 'setting': setting }, 
+            dataType: "json",
+            success: function (response) {  
+                console.log('성공');
+                if (response.result == "True") {
+                    Swal.fire({ title: '', text: '푸시 수신처리가 완료되었습니다.', timer: 800, showConfirmButton: false });
+                } else if (response.result == "False") {
+                    Swal.fire({ title: '', text: '푸시 수신거부가 완료되었습니다.', timer: 800, showConfirmButton: false });
+                }
+            },
+            error: function (request, status, error) {
+                console.log('실패');
+                Swal.fire({ title: '', text: '푸시 수신설정에 실패했습니다.', timer: 800, showConfirmButton: false });
+            }
+        });
+    });
+
+    $("#tokenSave").bind("click", function (e) {
+        e.preventDefault();
+        var pushToken = $("#pushToken").val();
+        var data = { 'type': 'tok', 'pushToken': pushToken };
+        $.ajax({
+            type: "POST",
+            url: "{% url 'accounts:profile' %}",
+            data: data,
+            dataType: "json",
+            success: function (request) {
+                console.log('ajax통신 성공');
+                Swal.fire('', '푸시토큰 설정을 완료했습니다.', 'success');
+                if (request.result == 'ok') {
+                    $(".swal2-confirm").click(function () {
+                        window.location.reload();
+                    });
+                }
+            },
+            error: function (request, status, error) {
+                console.log('ajax통신 실패');
+                Swal.fire({ title: '', text: '푸시토큰 설정에 실패했습니다.', timer: 800, showConfirmButton: false });
+            },
+        });
+    });
+</script>
+{% endblock scripts %}

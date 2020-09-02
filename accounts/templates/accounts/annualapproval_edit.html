@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}연차 결재선 수정-{{approvals.manager}}{% endblock title %}
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row text-left">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>연차 결재선 수정</b></h4>
+        <div class="col-lg-12 mt-30">
+            <form method="POST">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="goright mt-30">
+                    <a class="btn btn-default" href="{% url 'accounts:annualapproval' %}" role="button">
+                        이전
+                    </a>
+                    <button class="btn btn-theme" type="submit" onclick="return confirm('연차 결재선을 수정하시겠습니까?')">
+                        수정
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

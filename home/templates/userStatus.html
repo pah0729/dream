@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load home %}
+{% block title %}사원 현황{% endblock title %}
+{% block css %}
+<style>
+.room-box {
+    border: 1px solid #e7e7e7;
+    padding: 10px;
+    background: none;
+    margin: 5px;
+    width: 100%;
+}
+
+.chat-room-head {
+    background: none;
+    color: #555555;
+    min-height: 0;
+    padding: 15px;
+}
+
+.top_box {
+    padding: 5px;
+}
+</style>
+{% endblock %}
+{% block content %}
+{% get_attendance_count as count %}
+<div class="chat-room mt">
+    <div class="chat-room-head">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>사원 현황</b></h4>
+        <!-- <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">전체사원</span><h3><b>{{count.alluser_count}}</b></h3></div> -->
+        <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">출근</span> <span class="label label-outline-info">{{count.attendance_count}}</span></div>
+        <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">외근</span> <span class="label label-outline-skyblue">{{count.workout_count}}</span></div>
+        <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">연차</span> <span class="label label-outline-warning">{{count.annual_count}}</span></div>
+        <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">퇴근</span> <span class="label label-outline-orange">{{count.leave_count}}</span></div>
+        <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">결근</span> <span class="label label-outline-danger">{{count.absent_count}}</span></div>
+        <div class="top_box" style="display: inline-block;"><span style="font-size: 12px;">휴무/미등록</span> <span class="label label-outline" style="cursor:pointer" data-toggle="tooltip" data-placement="top" data-html="true" title='{% for i in count.unregistered %}{{i}} {% endfor %}'>{{count.unregistered_count}}</span></div>
+        <div class="top_box" class="pull-right" style="margin-right: 10px; color:#333">
+            <div class="pull-right">
+                <form enctype="multipart/form-data">
+                    <select class="form-control" name="team" id="team" onchange="this.form.submit()">
+                        <option value="">전체</option>
+                        {% get_team_list as teams %}
+                        {% for team in teams %}
+                        <option value="{{team}}">{{team}}</option>
+                        {% endfor %}
+                        </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="room-desk">
+        <h4 class="pull-left" style="font-weight: 700;">{{ request.GET.team }}</h4>
+        {% for user, status in data %}
+        <div class="room-box" style="display: inline-block;">
+            <div style="width: 40px; height: 50px; overflow: hidden; display: inline-block; position: absolute; left: 30px; margin-top: 5px;">
+                <img src="{{user.userImg.url}}" style="width: 40px; height: auto;">
+            </div>
+            <div style="display: inline-block; width: 120px; padding: 5px; margin-left: 40px;">
+                <a class="text-muted" style="font-size: 12px;">{{user.team}}</a>
+                <h5 class="text-info"><b>{{user}}</b> <span class="text-muted" style="font-size: 12px;"><b>{{user.position|cut:"사원"|cut:"(팀장대행)"}}</b></span></h5>
+            </div>
+            <div style="display: inline-block; padding: 5px;">
+                {% if status.condition == '출근' %}
+                <p><span class="label label-outline-info">{{status.condition}}</span> <span style="font-size: 12px;">{{status.date_commute|date:"a g:i"}}</span></p>
+                {% elif status.condition == '퇴근' %}
+                <p><span class="label label-outline-orange">{{status.condition}}</span> <span style="font-size: 12px;">{{status.date_commute|date:"a g:i"}}</span></p>
+                {% elif status.condition == '외근' %}
+                <p><span class="label label-outline-skyblue" style="cursor:pointer" {% if status.reason %} data-toggle="tooltip" data-placement="top" data-html="true" title="{{status.reason}}" {% endif %}>{{status.condition}}</span> <span style="font-size: 12px;">{{status.date_commute|date:"a g:i"}}</span></p>
+                {% elif status.condition == '복귀' %}
+                <p><span class="label label-outline-skyblue">{{status.condition}}</span> <span style="font-size: 12px;">{{status.date_commute|date:"a g:i"}}</span></p>
+                {% elif status.condition == '오전반차' or status.condition == '오후반차' %}
+                <p><span class="label label-outline-warning">{{status.condition}}</span></p>
+                {% elif status.division %}
+                <p><span class="label label-outline-warning" style="cursor:pointer" data-toggle="tooltip" data-placement="top" data-html="true" title='{{status.sdate | date:"Y-m-d"}} ({{status.sdate | date:"D" | cut:"요일"}}) <br>~ {{status.fdate | date:"m-d"}} ({{status.fdate | date:"D" | cut:"요일"}})'>{{status.division}}</span></p>
+                {% elif status.condition == '연차' %}
+                <p><span class="label label-outline-warning">{{status.condition}}</span></p>
+                {% elif status == '미등록' %}
+                <p><span class="label label-outline">휴무/{{status}}</span></p>
+                {% else %}
+                <p><span class="label label-outline-danger">{{status.condition}}</span></p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    $("#team").val('{{ request.GET.team }}');
+</script>
+{% endblock %} 

@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}출퇴근 등록{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+<style>
+    #map > div:nth-child(1) > div > div:nth-child(6) > div:nth-child(2) {
+        -webkit-box-sizing: unset!important;
+        -moz-box-sizing: unset!important;
+        box-sizing: unset!important;
+    }
+</style>
+{% endblock css %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row" style="text-align: center">
+        {% if user.is_staff %}
+        <a class="btn btn-default btn-sm pull-right " href="{% url 'commute:absenteeism' %}"
+            style="margin-bottom: 0.5em; margin-right: 2.5em">결근 관리</a><br>
+        {% endif %}
+        <div class="col-lg-12" style="text-align: center">
+            <form method="POST" onSubmit="return form_submit()" id="reg">{% csrf_token %}
+                <div class="custom-box">
+                    <div class="servicetitle">
+                        <h4 style="margin: 0 auto;">출퇴근 등록</h4>
+                        <hr>
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <button onClick="location.reload()" class="btn btn-default"><i class="fa fa-refresh"></i></button>
+                    </div>
+                    <div class="icn-main-container">
+                            <input type="hidden" name="local" class="form-control" value="" placeholder="위치는 자동으로 저장됩니다"
+                            maxlength="100" required id="id_local">
+                        <div id="map" style="width:100%;height:200px;"></div>
+                    </div>
+                    <p class="font-size-small text-red" style="padding-top:0.5em;">* 현재 위치가 제대로 표시되지 않으면, 새로고침 후 다시 시도해주세요.</p>
+                    <ul class="pricing">
+                        <li style="font-weight: 700;">{{user.username}}</li>
+                        <li><select name="condition" id="id_condition" class="form-control">
+                        <option value="">선택하세요</option>
+                        <option value="출근">출근</option>
+                        <option value="퇴근">퇴근</option>
+                        <option value="외근">외근</option>
+                        <option value="복귀">복귀</option>
+                        <option value="오전반차">오전반차</option>
+                        <option value="오후반차">오후반차</option>
+                    </select></li>
+                        <li><input type="text" name="reason" class="form-control" placeholder="사유"
+                        maxlength="30" id="id_reason"></li>
+                    </ul>
+                    <p><button type="submit" class="btn btn-theme btn-block" id="addCommute">등록</button></p>
+                </div>
+            </form>
+
+            <div class="custom-box" id="detail" style="display: none;">
+                <div class="servicetitle">
+                    <h4 style="margin: 0 auto;">출퇴근 상세</h4>
+                    <hr>
+                </div>
+                <div class="icn-main-container">
+                    <div id="map_view" style="width:100%;height:200px;"></div>
+                </div>
+                <ul class="pricing">
+                    <li style="font-weight: 700;" id="detail_user"></li>
+                    <li id="detail_date"></li>
+                    <li id="detail_status"></li>
+                    <li id="detail_reason"></li>
+                </ul>
+                <p><button type="button" class="btn btn-theme btn-block" id="detail_close">돌아가기</button></p>
+            </div>
+
+            <div class="col-lg-12" style="margin-top: 1rem">
+                    <div class='pull-right'>
+                        <form method="GET">
+                            <div class="input-field">
+                                <input class="pull-left" type="text" name="search" value="{{ request.GET.search }}" style="padding:3.6px 0; margin-right: 5px;">
+                                <button class="pull-left btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                <table class="table table-hover table-condensed cf" id="hidden-table-info" align="center">
+                    <thead class="font-size-medium">
+                        <tr>
+                            <th scope="col">이름</th>
+                            <th scope="col">상태</th>
+                            <th scope="col">등록일시</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not list %}
+                        <tr>
+                            <td valign="top" colspan="10" class="dataTables_empty">데이터가 없습니다.</td>
+                        </tr>
+                        {% else %}
+                        {% for post in list %}
+                        <tr class="cursor-pointer" onclick="detail({{post.pk}})">
+                            <td class="font-weight-bold">{{ post.user }}</td>
+                            <td class="font-weight-bold"><span class="label label-outline{% if post.condition == '출근' %}-info{% endif %}{% if post.condition == '퇴근' %}-orange{% endif %}{% if post.condition == '결근' %}-danger{% endif %}{% if post.condition == '연차' or post.condition == '오전반차' or post.condition == '오후반차' %}-warning{% endif %}{% if post.condition == '외근' or post.condition == '복귀' %}-skyblue{% endif %}">{{ post.condition }}</span></td>
+                            <td class="font-size-medium">{{ post.date_commute | date:"Y년 m월 d일 (D)" | cut:"요일" }}<br>{{ post.date_commute | date:"a g:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+
+                {% if list.has_other_pages %} 
+                <ul class="pagination"> 
+                    <!-- 현재 페이지에서 이전 페이지가 존재할 때, 이전버튼 활성화, 없을경우 비활성화 -->
+                    {% if list.has_previous %}
+                    <li><a href="?page={{ list.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">이전</a></li> 
+                    {% else %} 
+                    <li class="disabled"><span>이전</span></li> 
+                    {% endif %} 
+                    {% for i in page_range %}
+                    <!-- 현재 보고있는 페이지일 경우 색상 다르게 표시 -->
+                    {% if list.number == i %} 
+                    <li class="active"><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a></li>
+                    {% else %} 
+                    <li><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a></li> 
+                    {% endif %} 
+                    {% endfor %}
+                    <!-- 현재 페이지에서 다음 페이지가 존재할 때, 다음버튼 활성화, 없으면 비활성화 -->
+                    {% if list.has_next %} 
+                    <li><a href="?page={{ list.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">다음</a></li> 
+                    {% else %} 
+                    <li class="disabled"><span>다음</span></li> 
+                    {%endif %}
+                </ul>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{% static 'lib/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/date.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+<script type="text/javascript"
+    src="{% static 'lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-timepicker/js/bootstrap-timepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/advanced-form-components.js' %}"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1ab2faff12a013ae2918a69c8834a813"></script>
+
+<script>
+    var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+    var options = { //지도를 생성할 때 필요한 기본 옵션
+        center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+        level: 3 //지도의 레벨(확대, 축소 정도)
+    };
+
+    var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+
+    // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+    var mapTypeControl = new kakao.maps.MapTypeControl();
+
+    // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+    // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+    // map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+    // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+    var zoomControl = new kakao.maps.ZoomControl();
+    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+    // HTML5의 geolocation으로 사용할 수 있는지 확인합니다 
+    if (navigator.geolocation) {
+
+        // GeoLocation을 이용해서 접속 위치를 얻어옵니다
+        navigator.geolocation.getCurrentPosition(function (position) {
+
+            var lat = position.coords.latitude, // 위도
+                lon = position.coords.longitude; // 경도
+
+            var locPosition = new kakao.maps.LatLng(lat, lon), // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
+                message = '<div class="text-center" style="padding:5px;">현재 접속위치입니다.</div>'; // 인포윈도우에 표시될 내용입니다
+
+            // 마커와 인포윈도우를 표시합니다
+            displayMarker(locPosition, message);
+
+            // console.log('Coordinates: ' + locPosition.toString());
+            var aa = [];
+            aa = [position.coords.latitude, position.coords.longitude];
+            $("#addCommute").click(function () {
+                // console.log('눌렸다');
+                $("#id_local").val(aa);
+                if ($('#id_condition').val() == '') {
+                    Swal.fire('', '상태를 선택하세요.' , 'warning');
+                    return false;
+                } else {
+                    $('#addCommute').text('처리중입니다..');
+                    Swal.fire({
+                        text: '잠시만 기다려주세요..',
+                        timer: 300000,
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        onBeforeOpen: function () {
+                            Swal.showLoading();
+                        }
+                    });
+                    $(".swal2-styled").text("");
+                    setTimeout(function () {
+                        $('#addCommute').prop('disabled', true);
+                    }, 300)
+                }
+            });
+        });
+
+    } else { // HTML5의 GeoLocation을 사용할 수 없을때 마커 표시 위치와 인포윈도우 내용을 설정합니다
+
+        var locPosition = new kakao.maps.LatLng(33.450701, 126.570667),
+            message = '위치정보를 사용할 수 없어요..'
+
+        displayMarker(locPosition, message);
+    }
+
+    // 지도에 마커와 인포윈도우를 표시하는 함수입니다
+    function displayMarker(locPosition, message) {
+
+        // 마커를 생성합니다
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: locPosition
+        });
+
+        var iwContent = message, // 인포윈도우에 표시할 내용
+            iwRemoveable = true;
+
+        // 인포윈도우를 생성합니다
+        var infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
+            removable: iwRemoveable
+        });
+
+        // 인포윈도우를 마커위에 표시합니다 
+        infowindow.open(map, marker);
+
+        // 지도 중심좌표를 접속위치로 변경합니다
+        map.setCenter(locPosition);
+    }    
+</script>
+<script>
+    function detail(index) {
+        $("#detail").css("display", "");
+        $("#reg").css("display", "none");
+        var pk = index;
+        console.log(pk);
+        var data = { 'pk': pk };
+
+        $.ajax({
+            type: "GET",
+            url: "../detail_ajax/",
+            data: data,
+            success: function (response) {
+                console.log('성공');
+                var data = response.data;
+                var local = data.local.split(',');
+                var user = data.user;
+                var date = data.date_commute;
+                var status = data.condition;
+                var reason = data.reason;
+                $("#detail_user").text("" + user + "");
+                $("#detail_date").text("" + date + "");
+                $("#detail_status").text("" + status + "");
+                if (reason != '') {
+                    $("#detail_reason").text("사유 : " + reason + "");
+                } else {
+                    $("#detail_reason").text("");
+                }
+
+                var container = document.getElementById('map_view'); //지도를 담을 영역의 DOM 레퍼런스
+                var options = { //지도를 생성할 때 필요한 기본 옵션
+                    center: new kakao.maps.LatLng(local[0], local[1]), //지도의 중심좌표.
+                    level: 3 //지도의 레벨(확대, 축소 정도)
+                };
+
+                var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+
+                // 마커가 표시될 위치입니다 
+                var markerPosition  = new kakao.maps.LatLng(local[0], local[1]); 
+
+                // 마커를 생성합니다
+                var marker = new kakao.maps.Marker({
+                    position: markerPosition
+                });
+
+                // 마커가 지도 위에 표시되도록 설정합니다
+                marker.setMap(map);
+
+                $('html').animate({ scrollTop: 0 })
+            },
+            error: function (request, status, error) {
+                console.log('실패');
+            },
+        });
+    }
+
+    $("#detail_close").bind("click", function () {
+        $("#detail").css("display", "none");
+        $("#reg").css("display", "");
+    });
+</script>
+<script>
+    function form_submit() {
+        var condition_check = document.getElementById("id_condition");
+        var val = condition_check.options[condition_check.selectedIndex].value;
+        if (val == '퇴근') {
+            {% if half and not today_commute %}
+            var check = confirm("반차가 예정되어 있습니다. 퇴근등록 후 반차를 등록해주세요.");
+            return check;
+            {% endif %}
+        }
+    };
+</script>
+{% endblock %}

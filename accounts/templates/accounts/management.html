@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}사원 정보 관리{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+
+{% endblock css %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row text-center">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>사원 정보 관리</b></h4>
+        <div class="col-lg-12" style="text-align: center">
+            <section id="no-more-tables">
+                <div class='pull-right mb-30'>
+                    <form method="GET">
+                        <div class="input-field">
+                            <input class="pull-left" type="text" name="search" value="{{ request.GET.search }}"
+                                style="padding:3.6px 0; margin-right: 5px;">
+                            <button class="pull-left btn btn-sm btn-default" type="submit"><i
+                                    class="fa fa-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-hover table-condensed cf" id="hidden-table-info" align="center">
+                    <thead class="cf">
+                        <tr>
+                            <th scope="col"><span>이름</span></th>
+                            <th class="numeric" scope="col">소속팀</th>
+                            <th class="numeric" scope="col">직급</th>
+                            <th class="numeric">사번</th>
+                            <th class="numeric">연락처</th>
+                            <th class="numeric">구글메일</th>
+                            <th class="numeric none-1108">개인메일</th>
+                            <th class="numeric none-1108">입사일</th>
+                            <th class="numeric">정보관리</th>
+                            <th class="numeric">패스워드</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in list %}
+                        {% if post.userNum != '' and post.user.is_active == False %}
+                        {% else %}
+                        <tr class="font-size-normal">
+                            <td data-title="이름" class="font-size-normal font-weight-bold text-left">
+                                {% if post.userNum == '' and post.user.is_active == False %}
+                                <span class="label label-outline">신입</span>
+                                {% endif %}
+                                {{ post.user }}
+                            </td>
+                            <td class="numerictext-left" data-title="소속팀">{{ post.team.name }}</td>
+                            <td class="numeric" data-title="직급">{{ post.position.name }}</td>
+                            {% if post.userNum %}
+                            <td class="numeric" data-title="사번">{{ post.userNum }}</td>
+                            {% else %}
+                            <td class="numeric" data-title="사번">-</td>
+                            {% endif %}
+                            {% if post.phone %}
+                            <td class="numeric" data-title="연락처">{{ post.phone }}</td>
+                            {% else %}
+                            <td class="numeric" data-title="연락처">-</td>
+                            {% endif %}
+                            <td class="numeric" data-title="구글메일">{{ post.email_google }}</td>
+                            {% if post.email %}
+                            <td class="numeric none-1108" data-title="개인메일">{{ post.email }}</td>
+                            {% else %}
+                            <td class="numeric none-1108" data-title="개인메일">-</td>
+                            {% endif %}
+                            <td class="numeric none-1108" data-title="입사일">
+                                {{ post.entry_date | date:"Y-m-d" }}</td>
+                            <td class="numeric width-100" data-title="정보관리" style="width:5%;">
+                                <a class="btn btn-default btn-sm button_pull"
+                                    href="{% url 'accounts:manage_detail' post.pk %}">
+                                    <i class="fa fa-gear"> </i> 관리</a>
+                            </td>
+                            <td class="numeric width-100" data-title="패스워드 초기화" style="width:8%;">
+                                <a class="btn btn-theme btn-sm reset button_pull" data-id="{{post.pk}}"> <i
+                                        class="fa fa-key"> </i>
+                                    초기화</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+
+                {% if list.has_other_pages %}
+                <ul class="pagination mt-30">
+                    <!-- 현재 페이지에서 이전 페이지가 존재할 때, 이전버튼 활성화, 없을경우 비활성화 -->
+                    {% if list.has_previous %}
+                    <li><a
+                            href="?page={{ list.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">이전</a>
+                    </li>
+                    {% else %}
+                    <li class="disabled"><span>이전</span></li>
+                    {% endif %}
+                    {% for i in page_range %}
+                    <!-- 현재 보고있는 페이지일 경우 색상 다르게 표시 -->
+                    {% if list.number == i %}
+                    <li class="active"><a
+                            href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% else %}
+                    <li><a
+                            href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    <!-- 현재 페이지에서 다음 페이지가 존재할 때, 다음버튼 활성화, 없으면 비활성화 -->
+                    {% if list.has_next %}
+                    <li><a
+                            href="?page={{ list.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">다음</a>
+                    </li>
+                    {% else %}
+                    <li class="disabled"><span>다음</span></li>
+                    {%endif %}
+                </ul>
+                {%endif%}
+            </section>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#hidden-table-info").on("click", ".reset", function (e) {
+            e.preventDefault();
+            if (confirm('정말 초기화하시겠습니까?')) {
+                var pk = $(this).attr('data-id');
+                $.ajax({       // .reset 버튼을 클릭하면 <새로고침> 없이 ajax로 서버와 통신하겠다.
+                    url: "{% url 'accounts:management' %}", // 통신할 url을 지정
+                    type: "post",
+                    data: { 'pk': pk }, // 서버로 데이터 전송시 
+                    dataType: "json", //서버에서 json 형식의 데이터로 해석 할것임
+
+                    success: function (request) {  // 통신 성공시 -
+                        console.log(request.result);
+                        alert("비밀번호가 초기화 되었습니다.");
+                    },
+                    error: function (request, status, error) { // 통신 실패시 - 
+                        alert("비밀번호 초기화를 실패했습니다.");
+                    }
+                });
+            } else {
+                alert("초기화를 취소 했습니다.");
+                return false;
+            }
+        });
+    });
+
+
+</script>
+
+
+{% endblock %}

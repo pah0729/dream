@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}연차 스케줄{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/fullcalendar/core/main.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/fullcalendar/daygrid/main.css' %}" rel="stylesheet" />
+{% endblock css %}
+{% block content %}
+<aside class="col-lg-12 mt">
+  <h4 class="menu-inside text-left text-gray"><b>연차 스케줄</b></h4>
+  <section class="panel">
+    <div class="panel-body">
+      <div id="calendar" class="has-toolbar"> </div>
+    </div>
+  </section>
+</aside>
+
+{% endblock content %}
+{% block scripts %}
+<!--script for calender-->
+<script src="{% static 'lib/fullcalendar/core/main.js' %}"></script>
+<script src="{% static 'lib/fullcalendar/daygrid/main.js' %}"></script>
+<script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: ['dayGrid'],
+      locale: 'ko',
+      displayEventTime: false,
+      eventLimit: true, // for all non-TimeGrid views
+      views: {
+        dayGrid: {
+          eventLimit: 5 // adjust to 6 only for timeGridWeek/timeGridDay
+        }
+      },
+      header: {
+        left: '',
+        center: 'title',
+        right: 'prev,next today'
+      },
+      buttonText: {
+        today: 'today',
+        month: '월별',
+        week: '주별',
+        day: '일별'
+      },
+      events: [
+        {% for i in eventlist %}
+                {
+        title: '{{ i.user }} {{ i.division }} {{ i.datediff }}일',
+        start: '{{i.sdate|date:"Y-m-d"}}T00:00:00',
+        end: '{{i.fdate|date:"Y-m-d"}}T23:59:59',
+        url: '/annual/apply_approval/{{ i.pk }}/'
+      },
+      {% endfor %}
+        ]
+
+        });
+
+  calendar.render();
+      });
+</script>
+{% endblock scripts %}

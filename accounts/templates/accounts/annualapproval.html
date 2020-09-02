@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}연차 결재선 관리{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+{% endblock css %}
+
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row text-center">
+        <h4 class="menu-inside text-left text-gray"><b>연차 결재선 관리</b></h4>
+        <div class="col-lg-12">
+            <section id="no-more-tables">
+                <a class="btn btn-default btn-sm pull-right" data-target="#annualApprovalLine" data-toggle="modal"
+                    style="margin-bottom: 1em; margin-right: 0.5em">연차 결재선 추가</a>
+                <table cellpadding="20" cellspacing="0" border="0" class="table table-hover table-condensed cf"
+                    id="hidden-table-info">
+                    <thead class="cf">
+                        <tr>
+                            <th>소속팀</th>
+                            <th>담당자</th>
+                            <th class="numeric">상위결재자</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in list %}
+                        <tr class="cursor-pointer" onclick="location.href='/accounts/annualapproval/{{ item.pk }}/'">
+                            <td data-title="소속팀" class="font-size-normal">{{item.manager.team.name}}</td>
+                            <td data-title="담당자" class="text-gray font-weight-bold">{{item.manager}}</td>
+                            {% if item.approval == None %}
+                            <td class="numeric text-red" data-title="상위결재자">없음</td>
+                            {% else %}
+                            <td class="numeric text-gray font-weight-bold" data-title="상위결재자">{{item.approval}}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    <tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<form method="POST">
+    {% csrf_token %}
+    <div class="modal fade" id="annualApprovalLine">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">연차 결재선 추가</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        {% bootstrap_form form %}
+                    </p>
+                    <p class="font-size-normal">· 신입사원 입사시 연차를 결재 받을 '팀장' 또는 '팀장대행 사원'을
+                        상위 결재자로 지정하여 최초 1회 등록하시면 됩니다.
+                        <br>· 연차 결재라인 등록시 '담당자'는 중복하여 등록하실 수 없습니다.
+                        <br>· 목록에서 해당 사원 선택시 결재자를 수정하실 수 있습니다.
+                        퇴사, 보직변경 등 연차 결재선에 변동사항이 생길 경우, 해당 사원들의 상위결재자를 모두 수정해주세요.
+                        <br>· 센터장님을 제외한 사원의 상위 결재자를 공란으로 등록하실 경우,
+                        연차 결재선을 거치지 않고 최종 승인 처리되오니 등록에 유의해주세요.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-theme"
+                        onclick="return confirm('연차 결재선을 추가하시겠습니까?')">추가</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock content %}
+
+{% block scripts %}
+<!--script for this page-->
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        /*
+         * Insert a 'details' column to the table
+         */
+        var nCloneTh = document.createElement('th');
+        var nCloneTd = document.createElement('td');
+        nCloneTd.innerHTML = '';
+        nCloneTd.className = "center";
+
+        $('#hidden-table-info thead tr').each(function () {
+            this.insertBefore(nCloneTh, this.childNodes[0]);
+        });
+
+        $('#hidden-table-info tbody tr').each(function () {
+            this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+        });
+
+        /*
+         * Initialse DataTables, with no sorting on the 'details' column
+         */
+        var oTable = $('#hidden-table-info').dataTable({
+            "aoColumnDefs": [{
+                "bSortable": false,
+                "aTargets": [0]
+            }],
+            "aaSorting": [
+                [0, 'asc']
+            ],
+            "iDisplayLength": 10
+        });
+    });
+</script>
+{% endblock scripts %}

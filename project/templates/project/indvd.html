@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}개인 업무 목록{% endblock title %}
+{% block css %}
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datepicker/css/datepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-daterangepicker/daterangepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-timepicker/compiled/timepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datetimepicker/css/datetimepicker.css' %}" />
+<style>
+    ul.task-title,
+    ul.task-title li ul,
+    ul.task-title li ul li,
+    ul.task-title li {
+        padding: 0 !important;
+    }
+    .top-btn {
+        margin-bottom: 0.5em;
+        margin-right: 0.5em;
+        border-radius: 5px
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<h3 class="menu-inside"><i class="fa fa-angle-right"></i><a href="{% url 'project:list'%}"> 프로젝트 </a>
+    <i class="fa fa-angle-right"></i> <a href="{% url 'project:indvd'%}"> 개인 업무 목록</a></h3>
+<div class="col-lg-12">      
+    <div class="content-panel row">
+            <form method="GET">
+                <div style="text-align: right; padding: 1rem; height: 50px" class="col-lg-12">
+                    <select name="todo" onchange="submit()" class="form-control in-btn pull-right" >
+                        <option value="대상자" {% if viewtodo == '대상자'%} selected {% endif %}>대상자</option>
+                        <option value="오늘(대상자)" {% if viewtodo == '오늘(대상자)'%} selected {% endif %}>오늘(대상자)</option>
+                        <option value="작성자"{% if viewtodo == '작성자'%} selected {% endif %}>작성자</option>
+                        <option value="오늘(작성자)"{% if viewtodo == '오늘(작성자)'%} selected {% endif %}>오늘(작성자)</option>
+                    </select> 
+                </div>
+            </form>
+        <div class="col-lg-12">
+            <div class="article_file" id="todo1" style="margin-top: 20px;  text-align: center; ">
+                <div class="task-content" style="margin-top: 30px;">
+                    {% if todo %}
+                    {% for post in todo %}
+                    <ul onclick="location.href='/project/detail/{{ post.pk }}/'" id="sortable" class="task-list ui-sortable">
+                       
+                        {% if post.important == "높음" %}
+                        <li data-id="{{ post.pk }}" class="list-danger">
+                            {% elif post.important == "보통" %}
+                        <li data-id="{{ post.pk }}" class="list-primary">
+                            {% else %}
+                        <li data-id="{{ post.pk }}" class="list-warning">
+                            {% endif %}
+                            <ul class="task-title">
+                                <li style="width:100%;">
+                                    <ul href='{% url "project:todo_detail" post.pk %}' class="cut-wrap">
+                                        <li style="width:45%;" class="cut"><span>{{ post.content }}</span></li>
+                                        <li style="width:30%" class="cut"><span>{{ post.targets }}</span></li>
+                                        <li style="width:10%" class="cut"><span>{{ post.condition }}</span></li>
+                                        <li style="width:15%" class="cut"><span>{{ post.edate }}까지</span></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {% endfor %}
+                    {% else %}
+                    <ul class="task-list ui-sortable">
+                        <li class="list-success">
+                            <ul class="task-title">
+                                <li style="width:100%;">
+                                    <ul class="cut-wrap">
+                                        <li class="cut"><span>데이터가 없습니다.</span></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+{% block scripts %}
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+<script src="{% static 'js/target.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/date.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+<script type="text/javascript"
+    src="{% static 'lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/bootstrap-timepicker/js/bootstrap-timepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'lib/advanced-form-components.js' %}"></script>
+
+
+
+<script>
+
+
+
+
+    // var aa = "{{viewtodo}}";
+
+    // for (i = 1; i <= 4; i++) {
+    //     var j = $('.todo' + i);
+    //     if (j.val() == aa) {
+    //         $(j).removeClass("btn-default");
+    //         $(j).addClass("btn-primary");
+    //         break;
+    //     }
+
+    // }
+
+
+</script>
+{% endblock %}

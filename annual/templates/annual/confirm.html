@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}연차 결재{% endblock title %}
+{% block css %}
+<style>
+@media (max-width: 570px) {
+      .none_570 {
+            display: none;
+      }
+
+      .max_570 {
+            width: 100% !important;
+      }
+
+    }
+    
+    .content-panel {
+        border: 1px solid #DCDBD7;
+    }
+</style>
+{% endblock css %}
+{% block content %}
+<div class="col-lg-12 confirm">
+    <div class="content-panel row">
+        <div class="col-lg-12">
+            <div class="display table centered" style="min-height: 10rem">
+                <h2 style="line-height: 25px">휴 &nbsp; &nbsp;가&nbsp; &nbsp; 원</h2>
+            </div>
+            <form class="form goright" method="POST" action="{% url 'annual:confirm' confirm.pk %}">
+                {% csrf_token %}
+                <section id="" style="font-size: 13px;">
+                    <table class="table table-bordered table-condensed max_570"
+                        style="text-align: center; width: 50%; table-layout: fixed;" align="right">
+                        <tr>
+                            <td style="vertical-align: middle" rowspan="2" width="10%">결<br> <br>재</td>
+                            <td>담당</td>
+                            <td class="print_none">팀장</td>
+                            {% if confirm.user.team.name == '교육운영기획실' %}
+                            <td class="print_none">실장</td>
+                            {% else %}
+                            {% endif %}
+                            <td>사무국장</td>
+                            <td>센터장</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2rem 0"><span>{{confirm.user}}</span></td>
+                            <td class="print_none"><span
+                                    class="print_none">{% if confirm.teamleader == None %}{% else %}{{confirm.teamleader}}{% endif %}</span>
+                            </td>
+                            {% if confirm.user.team.name == '교육운영기획실' %}
+                            <td class="print_none"><span
+                                    class="print_none">{% if confirm.chief == None %}{% else %}{{confirm.chief}}{% endif %}</span>
+                            </td>
+                            {% else %}
+                            {% endif %}
+                            <td><span>{% if confirm.director_office == None %}{% else %}{{confirm.director_office}}{% endif %}</span>
+                            </td>
+                            <td><span>{% if confirm.director_center == None %}{% else %}{{confirm.director_center}}{% endif %}</span>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered table-condensed cf">
+                        <tr>
+                            <th class="cf" width="10%">소&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;속
+                            </th>
+                            <td class="numeric" colspan="4">
+                                <p>사)글로컬드림아카데미</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="cf"> 이&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;름</th>
+                            <td class="numeric" colspan="4">
+                                <p>{{confirm.user}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="cf">휴&nbsp;가&nbsp;기&nbsp;간</th>
+                            <td class="numeric" colspan="2">
+                                <p>{{confirm.sdate}} ~ {{confirm.fdate}} </p>
+                            </td>
+                            <th class="cf">휴&nbsp;가&nbsp;일&nbsp;수</th>
+                            <td class="numeric" colspan="1">
+                                <p>{{confirm.datediff|cut:".0"}}일</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="cf">휴&nbsp;가&nbsp;구&nbsp;분</th>
+                            <td class="numeric" colspan="4">
+                                <p> {{confirm.division}} {% if confirm.division == '기타' %} (사유:
+                                    {{confirm.divreason}}) {% else %} {% endif %} </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="cf">사&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;유</th>
+                            <td class="numeric" colspan="4">
+                                <p> {{confirm.reason}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="cf">휴가 예상 지역</th>
+                            <td class="numeric" width="40%">
+                                <p> {{confirm.local}}</p>
+                            </td>
+                            <th class="cf" width="15%">비상연락망</th>
+                            <td class="numeric" colspan="2">
+                                <p> (관계) {{confirm.relationship}} <br> (연락처) {{confirm.network}}</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered table-condensed cf">
+                        <tr>
+                            <th class="cf" width="10%">비&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;고
+                            </th>
+                            <td class="numeric" colspan="3" style="padding: 3rem 0">
+                                <p> {{confirm.remark|linebreaksbr}}</p>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered table-condensed cf" style="text-align: center">
+                        <tr>
+                            <td class="numeric" colspan="4" style="padding-left:0%">
+                                <div class="col-md-12">
+                                    <br>
+                                    <p>위와 같이 휴가를 신청하오니 허가하여 주시기 바랍니다.</p>
+                                    <br>
+                                    <p>{{ confirm.create | date:"Y년 m월 d일" }}</p>
+                                    <br>
+                                </div>
+                                <div class="col-md-12 goright">
+                                    <br>
+                                    <p>위 신청인 <strong>{{confirm.user}}</strong> (인)</p>
+                                    <br>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered table-condensed cf print_none">
+                        <tr>
+                            <th class="cf" width="10%">첨부서류</th>
+                            <td class="numeric">
+                                {% if confirm.file %}
+                                <p><a id="file" href="{{ confirm.file.url }}" download><i
+                                            class="fa fa-download"></i>&nbsp;{{ confirm.file }}</a></p>
+                                {% else %}
+                                <p>제출 서류가 없습니다.</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    {% if confirm.status == '반려' %}
+                    <table class="table table-bordered table-condensed cf print_none" style="text-align: center">
+                        <tr>
+                            <th class="cf" width="10%" style="background-color: #fdcfcf !important;">반려 사유</th>
+                            <td class="numeric">
+                                {% if confirm.return_reason %}
+                                <p>{{ confirm.return_reason }}</p>
+                                {% else %}
+                                <p>-</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    {% else %}
+                    <table class="table table-bordered table-condensed cf print_none" style="text-align: center">
+                        <tr>
+                            <th class="cf" width="10%">결재 코멘트</th>
+                            <td class="numeric">
+                                {% if confirm.teamleader and confirm.teamleader_comment %}
+                                <p>{{confirm.teamleader}} : {{ confirm.teamleader_comment }}</p>
+                                {% endif %}
+                                {% if confirm.chief and confirm.chief_comment %}
+                                <p>{{confirm.chief}} : {{ confirm.chief_comment }}</p>
+                                {% endif %}
+                                {% if confirm.director_office and confirm.director_office_comment %}
+                                <p>{{confirm.director_office}} : {{ confirm.director_office_comment }}</p>
+                                {% endif %}
+                                {% if confirm.director_center and confirm.director_center_comment %}
+                                <p>{{confirm.director_center}} : {{ confirm.director_center_comment }}</p>
+                                {% endif %}
+                                {% if not confirm.teamleader_comment and not confirm.chief_comment and not confirm.director_office_comment and not confirm.director_center_comment %}
+                                <p>작성된 코멘트가 없습니다.</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    {% endif %}
+                    {% if actions %}
+                    <table class="table table-bordered table-condensed cf print_none" style="text-align: center">
+                        <tr>
+                            <th class="cf" width="10%">코멘트 작성</th>
+                            <td class="numeric">
+                                <input type="text" class="form-control" name="comment" id="id_comment" maxlength="50"
+                                    placeholder="결재 코멘트 또는 반려 사유를 입력하세요.">
+                                <div class="validate">
+                                    <p style="padding-top:0.5em; font-size:0.9em">* 코멘트는 필수 입력사항이 아닙니다. 반려하실 경우에는 반드시
+                                        사유를 작성해주세요. </p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    {% endif %}
+                </section>
+                <div class="goright print_none">
+                    <a class="btn btn-default" href="{% url 'annual:list'%}" role="button">이전</a>
+                    {% if actions %}
+
+                    {% if confirm.finalApproval == True and confirm.fdate >= today %}
+                    {% if confirm.step.manager == request.user.profile %}
+                    <button type="button" name="action" value="반려" class="btn btn-danger cancle">승인취소</button>
+                    <button type="submit" name="action" value="반려" class="btn-danger cancle_true"
+                        style="display: none;">승인취소</button>
+                    {% else %}
+                    {% endif %}
+                    {% elif confirm.finalApproval == True and confirm.fdate < today %}
+                    {% else %}
+                    {% for action in actions %}
+                    {% if action != '반려' %}
+                    <button type="button" name="action" value="{{action}}"
+                        class="btn btn-primary btn-larg btn-confirm">승인</button>
+                    <button type="submit" name="action" value="{{action}}" class="btn btn-info btn-larg confirm_y"
+                        style="display: none;">승인</button>
+                    {% else %}
+                    <button type="button" name="action" value="{{action}}"
+                        class="btn btn-primary btn-danger btn-confirm">{{action}}</button>
+                    <button type="submit" name="action" value="{{action}}" class="btn btn-info btn-danger confirm_n"
+                        style="display: none;">{{action}}</button>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+
+      /* 엔터키 서브밋 방지*/
+      $('input[type="text"]').keydown(function () {
+            if (event.keyCode === 13) {
+                  event.preventDefault();
+            };
+      });
+
+      $("#id_comment").on("keyup", function() {
+            // 텍스트영역의 길이를 체크
+            var textLength = $(this).val().length;
+
+            // 제한된 길이보다 입력된 길이가 큰 경우 제한 길이만큼만 자르고 텍스트영역에 넣음
+            if (textLength > 50) {
+                  swal.fire('50자 이상 적을 수 없습니다.','','warning');
+                  $(this).val($(this).val().substr(0, 50));
+            }
+      });
+
+      $(".btn-confirm").bind("click", function (e) {
+            var data = $(this); 
+            var action = $(this).val();
+            if (action == '대기') {
+                  var actions = '승인'
+            } else if (action == '승인') {
+                  var actions = '승인'
+            } else if (action == '반려') {
+                  var actions = '반려'
+            }
+            e.preventDefault();
+            Swal.fire({
+                  title: '' + actions + ' 하시겠습니까?',
+                  text: '',
+                  type: 'question',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: '예',
+                  cancelButtonText: '아니오'
+            }).then(function (result) {
+                  if (result.value) {
+                        if (action == '대기' || action == '승인') {
+                              $(".confirm_y").click();
+                        } else if (action == '반려') {
+                              if ($("#id_comment").val() == '') {
+                                    Swal.fire('', '결재 코멘트란에 반려 사유를 입력해주세요.', 'warning');
+                              } else {
+                                   $(".confirm_n").click(); 
+                              }
+                        }
+                  }
+            })
+      });
+
+      $(".cancle").bind("click", function (e) {
+            console.log('0');
+            Swal.fire({
+                  title: '승인된 연차를 승인 취소할까요?',
+                  text: '이 작업은 되돌릴 수 없습니다.',
+                  type: 'question',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: '예',
+                  cancelButtonText: '아니오'
+            }).then(function (result) {
+                  if (result.value) {
+                        if ($("#id_comment").val() == '') {
+                              Swal.fire('', '결재 코멘트란에 반려 사유를 입력해주세요.', 'warning');
+                        } else {
+                        $(".cancle_true").click();
+                        }      
+                  }
+            })
+      });
+</script>
+{% endblock scripts %}

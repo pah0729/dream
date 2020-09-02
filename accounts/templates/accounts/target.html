@@ -1,0 +1,24 @@
+{% load accounts %}
+{% get_profile_list as profile_list %}
+{% get_team_list as team_list %}
+  
+<select id='example-example-enableFiltering-enableClickableOptgroups' multiple='multiple'>
+      
+<optgroup label='팀장'>
+    {% for item in profile_list %}
+        {% if item.position.name == "팀장" %}
+        <option value='{{item.user}}'>{{item.user}}</option>
+        {% endif %} 
+    {% endfor %} 
+</optgroup> 
+
+{% for team in team_list %}
+<optgroup label='{{team.name}}'>
+    {% for item in profile_list %}
+        {% if team.name == item.team.name %}
+        <option value='{{item.pk}}'>{{item.user}}</option>
+       {% endif %} 
+    {% endfor %} 
+</optgroup> 
+{% endfor %}
+</select>

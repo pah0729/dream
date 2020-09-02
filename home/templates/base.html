@@ -1,0 +1,356 @@
+{% load static %}
+{% load accounts %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="google-site-verification" content="uyUh4MgJQPa5Um6-ejoXr9nEKs15v-sbdL_tqAomHxA" />
+    <meta name="keywords" content = "(사)글로컬드림아카데미, 글로컬드림아카데미, 드림웨어, dreamware, glocal dream academy, 그룹웨어, groupware">
+    <meta name ="description" content = "(사)글로컬드림아카데미의 그룹웨어 입니다.">
+    <title>{% block title %}{% endblock %} | 드림웨어</title>
+    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'icons/font-awesome/css/fontawesome.min.css' %}" rel="stylesheet" >
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/gritter/css/jquery.gritter.css' %}" />
+    <link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+    <!-- css for todo -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/to-do.css' %}">
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link href="{% static 'lib/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
+    <!-- <style>
+        #ascrail2000 {background: rgb(252, 248, 227) !important; }
+        #ascrail2000 div {background-color: rgb(167, 167, 168) !important; }
+    </style> -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146778352-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-146778352-1');
+    </script>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+    {% block css %}
+    {% endblock css %}
+</head>
+<body>
+    <section id="container">
+        <header class="header white2-bg">
+            <div class="sidebar-toggle-box">
+                <div class="fa fa-bars"></div>
+            </div>
+            <a href="{% url 'main' %}" class="logo"><img src="{% static '/img/glocal-logo-origin.svg' %}" style="width: 35px; height: 35px; opacity: 1;"><img src="{% static '/img/dreamware-black.svg' %}" style="width: 120px; height: 20px; opacity: 0.7;"></a>
+            {% if user.is_active %}
+            <div class="top-menu">
+                <div class="nav notify-row top-menu float-left">
+                    <ul class="nav top-menu ">
+                        <li id="mobile_check" style="display:none"><a class="top-menu border-gray" href="{% url 'commute:list' %}" style="margin-right:10px;"> 출・퇴근</a>
+                        </li>
+                        <li id="header_notification_bar" class="dropdown" >
+                            {% get_alram_length as total%}
+                            <a data-toggle="dropdown" class="dropdown-toggle border-gray" href="#">
+                                <i class="far fa-bell"></i>
+                                {% if total != 0 %}
+                                <span class="heartbit"></span>
+                                <span class="badge badge_none">{{ total }}</span>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu extended notification headbell">
+                                <div class="notify-arrow notify-arrow-yellow"></div>
+                                <li>
+                                    {% if total != 0 %}
+                                    <p class="yellow" style="text-align: center">{{ total }}개의 알림이 있습니다</p>
+                                    {% else %}
+                                    <p class="yellow" style="text-align: center">알림이 없습니다</p>
+                                    {% endif %}
+                                </li>
+                                    {%  get_alram_confirms as annual_list%}
+                                    <li class="annual_ar" {% if not annual_list %}style="display:none;"{% endif %}>
+                                    <a>
+                                        <b>&nbsp;결재 요청된 휴가원이 {{annual_list|length}}건 있습니다.</b>
+                                    </a>
+                                    <div class="ar">
+                                        {% for post in annual_list %}
+                                        <a href="{% url 'annual:confirm' post.pk %}"
+                                            style="text-overflow: ellipsis;white-space: nowrap ; width:95%"><i
+                                                class="fa fa-angle-right"></i>&nbsp;{{post.user}}님의 연차 결재 요청</a>
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                                {% get_alram_notices as notice_list%}
+                                <li class="notice_ar" {% if not notice_list %}style="display:none;"{% endif %}>
+                                    <a>
+                                        <b>&nbsp;미확인 공지가 {{ notice_list|length }}건 있습니다.</b>
+                                    </a>
+                                    <div class="ar">
+                                        {% for post in notice_list %}
+                                        <a class="cut" href="{% url 'notice:detail' post.num.pk%}"
+                                            style="text-overflow: ellipsis; white-space: nowrap ; width:95%"><i
+                                                class="fa fa-angle-right"></i>&nbsp;
+                                                {% if post.num.important == "높음" %}
+                                                <span class="label label-danger" style="width:30px;">중요</span>
+                                                {% endif %}
+                                                {{ post.num.title }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- <li>
+                            <a class="logout top-menu border-gray" href="{% url 'logout' %}" onclick="return confirm('로그아웃 하시겠습니까?')"><i class="fa fa-sign-out"></i></a>
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </header>
+        <aside>
+            <div id="sidebar" class="nav-collapse ">
+                <ul class="sidebar-menu" id="nav-accordion">
+                    {% if request.user.profile %}
+                        {% if request.user.profile.userImg %}
+                    <div class="text-center">
+                        <div style="width: 75px; height: 75px; overflow: hidden; display: inline-block; border-radius: 50%;">
+                            <img src="{{request.user.profile.userImg.url}}" style="width: 75px; height: auto;">
+                        </div>
+                    </div>
+                        {% else %}
+                        {% endif %}
+                    <h6 class="text-center font-weight-bold text-gray"><span class="label label-outline">{{request.user.profile.team.name}}</span></h6>
+                    <h4 class="text-center font-weight-bold text-gray" style="font-size: 15px;">{{request.user.username}} <span class="font-size-medium">{{request.user.profile.position.name|cut:"사원"}}</span></h4>
+                    <h4 class="text-center text-gray" style="font-size: 15px;">
+                        <span class="font-size-medium"><a href="{% url 'accounts:profile' %}">마이페이지</a></span>
+                        <span class="font-size-medium">&nbsp; | &nbsp;</span>
+                        <span class="font-size-medium"><a href="{% url 'logout' %}" onclick="return confirm('로그아웃 하시겠습니까?')">로그아웃</a></span>
+                    </h4>
+                    {% else %}
+                    {% endif %}
+                    <div style="padding: 5px;">
+                        <hr style="margin-top: 0; margin-bottom: 0; border-top: 1px dotted #aaaaaa;">
+                    </div>
+                    <!-- <li class="sub-menu">
+                        <a href="#">
+                            <span>사내게시판</span>
+                        </a>
+                        <ul class="sub">
+                            <li><a href="{% url 'notice:list' %}"><i class="fa fa-angle-right"></i>공지사항</a></li>
+                            <li><a href="{% url 'notice:case_list' %}"><i class="fa fa-angle-right"></i>사례관리</a></li>
+                        </ul>
+                    </li> -->
+                    <li class="sub-menu">
+                        <a class="" href="{% url 'notice:list' %}">
+                            <span>공지사항</span>
+                        </a>
+                    </li>
+                    <li class="sub-menu">
+                        <a href="{% url 'jobreport:list' %}">
+                            <span>주간업무보고</span>
+                        </a>
+                    </li>
+                    <li class="sub-menu">
+                        <a href="#">
+                            <span>연차</span>
+                        </a>
+                        <ul class="sub">
+                            <li><a href="{% url 'annual:new' %}"><i class="fa fa-angle-right"></i>연차 신청</a></li>
+                            <li><a href="{% url 'annual:list' %}"><i class="fa fa-angle-right"></i>연차 신청 목록</a></li>
+                            <li><a href="{% url 'annual:calendar' %}"><i class="fa fa-angle-right"></i>연차 스케줄</a></li>
+                        </ul>
+                    </li>
+                    <li class="sub-menu">
+                        <a href="#">
+                            <span>프로젝트</span>
+                        </a>
+                        <ul class="sub">
+                            <li><a href="{% url 'project:list' %}"><i class="fa fa-angle-right"></i>프로젝트 목록</a></li>
+                            <li><a href="{% url 'project:indvd' %}"><i class="fa fa-angle-right"></i>개인 업무 목록</a></li>
+                            <li><a href="{% url 'project:calendar' %}"><i class="fa fa-angle-right"></i>프로젝트 스케줄</a>
+                            <li><a href="{% url 'project:history' %}"><i class="fa fa-angle-right"></i>히스토리</a></li>
+                        </ul>
+                    </li>
+                    <li class="sub-menu">
+                        <a class="javascript:;" href="{% url 'todo_list:todolist' %}">
+                            <span>TO-DO</span>
+                        </a>
+                    </li>
+                    <li class="sub-menu">
+                        <a class="" href="{% url 'accounts:org' %}">
+                            <span>조직도</span>
+                        </a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li class="sub-menu">
+                        <a href="#">
+                            <span>사원 관리</span>
+                        </a>
+                        <ul class="sub">
+                            <li><a href="{% url 'accounts:management' %}"><i class=" fa fa-angle-right"></i>사원 정보 관리</a></li>
+                            <li><a href="{% url 'commute:absenteeism' %}"><i class=" fa fa-angle-right"></i>출·퇴근 관리</a></li>
+                            <li><a href="{% url 'annual:total' %}"><i class=" fa fa-angle-right"></i>연차 현황</a></li>
+                            <li><a href="{% url 'annual:approval' %}"><i class=" fa fa-angle-right"></i>휴가원 관리</a></li>
+                            <li><a href="{% url 'annual:manage' %}"><i class=" fa fa-angle-right"></i>연차 신청 (관리자)</a></li>
+                            <li><a href="{% url 'accounts:annualapproval' %}"><i class=" fa fa-angle-right"></i>연차 결재선 관리</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </aside>
+        <section id="main-content">
+            <section class="wrapper site-min-height">
+                {% block content %}
+                {% endblock content %}
+            </section>
+            <!-- /wrapper -->
+            {% block popup %}
+            {% endblock popup %}
+        </section>
+        <!--footer start-->
+
+        <footer class="site-footer">
+            <div class="text-center">
+                <div class="credits mt-10 mb-10">
+                    &copy; 2019-2020. <strong>GLOCAL DREAM ACADEMY</strong> All Rights Reserved.
+                </div>
+                <a href="#" class="go-top">
+                    <i class="fa fa-angle-up"></i>
+                </a>
+            </div>
+        </footer>
+        <!--footer end-->
+    </section>
+    
+    <script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
+    <!-- <script src="{% static 'lib/jquery/jquery-3.2.1.min.js' %}"></script> -->
+    <script src="{% static 'lib/jquery-ui-1.9.2.custom.min.js' %}"></script>
+    <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script src="{% static 'lib/jquery.cookie.js'%} "></script>
+    <script src="{% static 'lib/jquery.dcjqaccordion.2.7.js' %}"></script>
+    <script src="{% static 'lib/jquery.scrollTo.min.js' %}"></script>
+    <script src="{% static 'lib/jquery.nicescroll.js' %}" type="text/javascript"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'lib/advanced-datatable/js/jquery.dataTables.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/advanced-datatable/js/DT_bootstrap.js' %}"></script>
+    <script src="{% static 'lib/jquery.sparkline.js' %}"></script>
+    <!--common script for all pages-->
+    <script src="{% static 'lib/common-scripts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/gritter/js/jquery.gritter.js' %}"></script>
+    <script src="{% static 'lib/jquery.ui.touch-punch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/gritter-conf.js' %}"></script>
+    <!--script for calendar page-->
+    <script src="{% static 'lib/zabuto_calendar.js' %}"></script>
+    <script src="{% static 'lib/orgchart.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'lib/sweetalert2/dist/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'lib/sweetalert2/sweet-alert.init.js' %}"></script>
+    {% if messages %}
+        {% for message in messages %}
+            <script> Swal.fire("", "{{ message|safe }}", "{{ message.tags }}"); </script> 
+        {% endfor %}
+    {% endif %}
+    <script>
+        $(".list_back").click(function () {
+            window.history.back();
+        });
+        let ua = navigator.userAgent.toLowerCase();
+        let isAndroid = ua.indexOf("android") > -1;
+        if (isAndroid) {
+            $('#android_shorcut').css("display", "block");
+        }
+        window.onload = function () {
+            if (navigator.userAgent.match(/Android/i) ||
+                navigator.userAgent.match(/webOS/i) ||
+                navigator.userAgent.match(/iPhone/i) ||
+                navigator.userAgent.match(/iPad/i) ||
+                navigator.userAgent.match(/iPod/i) ||
+                navigator.userAgent.match(/BlackBerry/) ||
+                navigator.userAgent.match(/Windows Phone/i) ||
+                navigator.userAgent.match(/ZuneWP7/i)
+            ) {
+                $("#mobile_check").css("display", "block");
+                $(".mobile_check").css("display", "none");
+
+            } else {
+                $("#mobile_check").css("display", "none");
+                $(".mobile_check").css("display", "block");
+            }
+        }
+        // var filter = "win16|win32|win64|mac";
+        // if(navigator.platform){
+        //     if(0 > filter.indexOf(navigator.platform.toLowerCase())){
+        //         $("#mobile_check").css("display", "block");
+        //         $(".mobile_check").css("display", "none");
+        //     }else{
+        //         $("#mobile_check").css("display", "none");
+        //         $(".mobile_check").css("display", "block");
+        //     }
+        //     }
+        $(document).ready(function () {
+            $(".menu-inside a:last").css({ 'background': '#f1f3f4', 'display': 'inline-block', 'border-radius': ' 0.2em', 'padding': ' 0.2em 0.9em', 'border': '1px solid #f1f1f1' });
+            $('.dataTables_wrapper  input,.dataTables_wrapper  select').addClass('form-control');
+            $('.dataTables_wrapper .form-control').css('height', '2em');
+            $(' .table>thead:first-child>tr:first-child>th').css('text-align', 'center');
+            $(".dropdown-toggle").click(function () {
+                setTimeout(function () {
+                    var al_1 = $(".notice_ar .ar").height();
+                    var al_2 = $(".annual_ar .ar").height();
+                    if (al_1 > 144) {
+                        $(".notice_ar .ar").css({ 'height': '144px', 'overflow-y': 'scroll' });
+                    } else if (al_2 > 144) {
+                        $(".annual_ar .ar").css({ 'height': '144px', 'overflow-y': 'scroll' });
+                    }
+                }, 50)
+            });
+            $('.guide .click-hide').click(function () {
+                $(".guide").hide();
+                $(".guide iframe").remove();
+            });
+        });
+    </script>
+    <!-- 테이블 오버플로우 -->
+    <script>
+        // Run on window load in case images or other scripts affect element widths
+        $(window).on('load', function() {
+            // Check all tables. You may need to be more restrictive.
+            $('.table-scroll').each(function() {
+                var element = $(this);
+                // Create the wrapper element
+                var scrollWrapper = $('<div />', {
+                    'class': 'scrollable',
+                    'html': '<div />' // The inner div is needed for styling
+                }).insertBefore(element);
+                // Store a reference to the wrapper element
+                element.data('scrollWrapper', scrollWrapper);
+                // Move the scrollable element inside the wrapper element
+                element.appendTo(scrollWrapper.find('div'));
+                // Check if the element is wider than its parent and thus needs to be scrollable
+                if (element.outerWidth() > element.parent().outerWidth()) {
+                    element.data('scrollWrapper').addClass('has-scroll');
+                }
+                // When the viewport size is changed, check again if the element needs to be scrollable
+                $(window).on('resize orientationchange', function() {
+                    if (element.outerWidth() > element.parent().outerWidth()) {
+                        element.data('scrollWrapper').addClass('has-scroll');
+                    } else {
+                        element.data('scrollWrapper').removeClass('has-scroll');
+                    }
+                });
+            });
+        });
+    </script>
+    {% block scripts %}
+    {% block targetscripts %}
+    {% endblock targetscripts %}
+    {% endblock scripts %}
+</body>
+</html>

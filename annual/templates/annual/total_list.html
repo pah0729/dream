@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% block title %}연차 현황{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet">
+
+{% endblock css %}
+{% block content %}
+<div class="col-lg-12 ">
+  <div class="content-panel row" style="text-align: center">
+    <h4 class="menu-inside text-left text-gray"><b>연차 현황</b></h4>
+    <div class="col-lg-12">
+      <section id="no-more-tables">
+        <form>
+          <div class="pull-right mt-30">
+            <button type="submit" class="btn btn-theme pull-right btn-sm" name="type" value="퇴사" style="margin-bottom: 1em;">퇴직</button>
+            <button type="submit" class="btn btn-default pull-right btn-sm" name="type" value="재직" style="margin-bottom: 1em; margin-right: 0.5em;">재직중</button>
+          </div>
+        </form>
+        <table cellpadding="20" cellspacing="0" border="0" class="table table-hover table-condensed cf"
+          id="hidden-table-info">
+          <thead class="cf">
+            <tr>
+              <th >이름</th>
+              <th class="numeric">입사일</th>
+              <th class="numeric">근속연수</th>
+              <th class="numeric">최근발생연차</th>
+              <th class="numeric">소멸예정연차</th>
+              <th class="numeric">발생</th>
+              <th class="numeric">사용</th>
+              <th class="numeric">소멸</th>
+              <th class="numeric">사용예정</th>
+              <th class="numeric">잔여</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% if not annualdata %}
+              <tr>
+                  <td valign="top" colspan="10" class="dataTables_empty">데이터가 없습니다.</td>
+              </tr>
+              {% else %}
+            {% for user, ocrncdate, ocrncdate_ex, extncdate_oc, extncdate, create, use, extnc, due, remain in annualdata %}
+            <tr class="cursor-pointer" onclick="location.href='/annual/plus/{{ user.pk }}/'">
+              <td class="td-middle" data-title="이름" style="font-weight: 800;">{{user}}</td>
+              <td class="numeric td-middle" data-title="입사일"><span class="font-size-normal">{{user.entry_date | date:"Y-m-d"}}</span></td>
+              <td class="numeric td-middle" data-title="근속연수"><span class="font-size-normal">만 <b class="text-info">{{user.get_tenures}}</b>년</span></td>
+              {% if ocrncdate == '없음' %}
+              <td class="numeric td-middle" data-title="최근발생연차">-</td>
+              {% else %}
+              <td class="numeric td-middle" data-title="최근발생연차"><span class="label label-outline-info">발생일</span> <span class="font-size-medium font-weight-bold">{{ocrncdate | date:"Y-m-d"}}</span><br><span class="label label-outline-danger">소멸일</span> <span class="font-size-medium font-weight-bold">{{ocrncdate_ex | date:"Y-m-d"}}</span></td>
+              {% endif %}
+              {% if extncdate == '없음' %}
+              <td class="numeric td-middle" data-title="소멸예정연차">-</td>
+              {% else %}
+              <td class="numeric td-middle" data-title="소멸예정연차"><span class="label label-outline-info">발생일</span> <span class="font-size-medium font-weight-bold">{{extncdate_oc | date:"Y-m-d"}}</span><br><span class="label label-outline-danger">소멸일</span> <span class="font-size-medium font-weight-bold">{{extncdate | date:"Y-m-d"}}</span></td>
+              {% endif %}
+              <td class="numeric td-middle text-info" data-title="발생" style="font-weight: 800">{{create|cut:".0"}}</td>
+              <td class="numeric td-middle text-warning" data-title="사용" style="font-weight: 800">{{use|cut:".0"}}</td>
+              <td class="numeric td-middle text-danger" data-title="소멸" style="font-weight: 800">{{extnc|cut:".0"}}</td>
+              <td class="numeric td-middle text-muted" data-title="사용예정" style="font-weight: 800">{{due|cut:".0"}}</td>
+              <td class="numeric td-middle text-default" data-title="잔여" style="font-weight: 800">{{remain|cut:".0"}}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          <tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+<!--script for this page-->
+<script type="text/javascript">
+
+
+  $(document).ready(function () {
+    /*
+     * Insert a 'details' column to the table
+     */
+    var nCloneTh = document.createElement('th');
+    var nCloneTd = document.createElement('td');
+    nCloneTd.innerHTML = '';
+    nCloneTd.className = "center";
+
+    $('#hidden-table-info thead tr').each(function () {
+      this.insertBefore(nCloneTh, this.childNodes[0]);
+    });
+
+    $('#hidden-table-info tbody tr').each(function () {
+      this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+    });
+
+    /*
+     * Initialse DataTables, with no sorting on the 'details' column
+     */
+    var oTable = $('#hidden-table-info').dataTable({
+      "aoColumnDefs": [{
+        "bSortable": false,
+        "aTargets": [0]
+      }],
+      "aaSorting": [
+        [0, 'asc']
+      ],
+      "iDisplayLength": 100,
+    });
+  });
+
+</script>
+{% endblock scripts %}

@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>드림웨어</title>
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!--external css-->
+    <link href="{% static 'lib/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 p404 centered">
+                <img src="{% static '/img/glocal-logo-black.svg' %}" style="width: 100px; height: 100px; opacity: 1;">
+                <h4>요청하신 페이지가 존재하지 않습니다.</h4>
+                <h6>페이지가 삭제되었거나, 이동되었을 수 있습니다.</h6>
+                <br>
+                <h6><a href="https://dreamware.or.kr" class="">홈으로</a></h6>
+            </div>
+        </div>
+    </div>
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

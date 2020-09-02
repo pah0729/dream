@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}{{post.title}}{% endblock title %}
+{% block css %}
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datepicker/css/datepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-daterangepicker/daterangepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-timepicker/compiled/timepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datetimepicker/css/datetimepicker.css' %}" />
+<style>
+    .table {
+        margin: 0;
+    }
+
+    table img {
+        vertical-align: super !important;
+    }
+
+    table>tbody>tr>td,
+    table>tbody>tr>th,
+    table>tfoot>tr>td,
+    table>tfoot>tr>th,
+    table>thead>tr>td,
+    table>thead>tr>th {
+        vertical-align: middle !important;
+        font-size: 1.2rem;
+    }
+
+    table tr td:nth-of-type(odd) {
+        white-space: nowrap;
+    }
+
+    .contents {
+        min-height: 10rem;
+        height: 100%;
+        border-top: #e6e6e6 solid 2px;
+        border-bottom: #e6e6e6 solid 2px;
+        margin: 0;
+        padding-left: 4rem;
+        vertical-align: middle;
+        text-align: left
+    }
+
+    .ui-sortable>li {
+        padding: 15px 5px 15px 5px !important;
+    }
+
+    .top-btn {
+        margin-bottom: 0.5em;
+        margin-right: 0.5em;
+        width: 50px;
+        border-radius: 5px
+    }
+
+    span.dtlabel {
+        display: inline-block;
+        width: 50px;
+        height: 19px;
+        line-height: 16px;
+        font-size: 12px;
+    }
+
+    ul.task-title, ul.task-title li ul, ul.task-title li ul li ,ul.task-title li { padding: 0!important;}
+</style>
+{% endblock %}
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row">
+        <div class="col-lg-12" style="text-align: right; padding-left:1rem 0;margin-bottom: 2rem;">
+            <a class="btn btn-theme btn-sm pull-right" data-target="#layerpop" data-toggle="modal">업무등록</a>
+            <a class="btn btn-danger btn-sm pull-right top-btn" href="{% url 'project:stop' post.pk %}">중지</a>
+            <a class="btn btn-default btn-sm pull-right top-btn" href="{% url 'project:edit' post.pk %}">수정</a>
+        </div>
+        <div class="col-lg-12 article">
+            <div class="article_header" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px">
+                <h3 style="margin-left: 10px; color: #2a2a2a;">{{ post.title }}</h3>
+                <div class="article_date">
+                    <p><img src="/media/{{ post.user.userImg }}" class="img-circle" height="40" width="40">
+                        <b>{{ post.user }}</b></p>
+                </div>
+            </div>
+            <div class="article_target" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                <p><span class="label label-outline">대상자</span>&nbsp; {{ post.targets }}</p>
+
+            </div>
+            <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                <p><span class="label label-outline">기간</span>&nbsp; {{ post.sdate }} ~ {{ post.edate }}</p>
+            </div>
+            <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                <p><span class="label label-outline">상태</span>&nbsp; {{ post.condition }}</p>
+            </div>
+            <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                {% if post.progressBar == None %}
+                <p><span class="label label-outline">진행률</span>&nbsp; 0%</p>
+                {% else %}
+                <p><span class="label label-outline">진행률</span>&nbsp; {{post.progressBar}}%</p>
+                {% endif %}
+            </div>
+            <div class="article_body" style="margin-top: 20px;">
+                <p>{{ post.content|linebreaksbr }}</p>
+            </div>
+
+            <div class="article_file" style="border-top: 1px solid #e5e5e5; text-align: center; ">
+                <form method="GET">
+                <div style="text-align: right; padding: 0;margin: 10px 0 14px 0 ;">
+                    <input class="btn btn-default btn-sm  top-btn condition1"  type="submit" value = "완료" name="condition" style="margin: 0;margin-top: 4px">
+                    <input class="btn btn-default btn-sm  top-btn condition2" type="submit" value = "중지" name="condition" style="margin: 0;margin-top: 4px">
+                    <input class="btn btn-default btn-sm  top-btn condition3" type="submit" value = "진행" name="condition" style="margin: 0;margin-top: 4px">
+                    <input class="btn btn-default btn-sm  top-btn condition4" type="submit" value = "전체" name="condition" style="margin: 0; margin-top: 4px">
+                </div>
+                </form>
+             
+                <div class="task-content">
+                    <ul id="sortable" class="task-list ui-sortable">
+                        {% for post in todo %}
+                        {% if post.important == "높음" %}
+                        <li data-id="{{ post.pk }}" class="list-danger" style="overflow: hidden" {% if post.condition == '완료' %} data-toggle="tooltip" data-placement="top" data-html="true"  title="완료 : {{post.complate}}"{% endif %} >
+                            {% elif post.important == "보통" %}
+                        <li data-id="{{ post.pk }}" class="list-primary" style="overflow: hidden" {% if post.condition == '완료' %} data-toggle="tooltip" data-placement="top" data-html="true"  title="완료 : {{post.complate}}" {% endif %}>
+                            {% else %}
+                        <li data-id="{{ post.pk }}" class="list-warning" style="overflow: hidden" {% if post.condition == '완료' %} data-toggle="tooltip" data-placement="top" data-html="true"  title="완료 : {{post.complate}}" {% endif %}>
+                            {% endif %}
+                            <ul class="task-title">
+                                <li style="width:100%;" >
+                                    <ul onclick="location.href='/project/detail/{{ post.pk }}/'" class="cut-wrap cursor-pointer" >
+                                        <li style="width:45%;"  class="cut"><span>{{ post.content }}</span></li>
+                                        <li style="width:30%"  class="cut"><span>{{ post.targets }}</span></li>
+                                        <li style="width:10%" class="cut " ><span >{{ post.condition }}</span></li>
+                                        <li style="width:15%;" class="cut"><span>{{ post.edate }}까지</span></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <div class="modal fade" id="layerpop">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">×</button>
+                            <h4 class="modal-title">업무 등록</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                <label for="content"><span class="label label-outline">업무내용</span></label>
+                                <div class="article_body">
+                                        <p><textarea class="form-control noresize" name="content" id="contact-message" rows="5" data-rule="required"
+                                                data-msg="작성해주세요" required></textarea></p>
+                                    </div>
+                            </p>
+                            <p><label for="important"><span class="label label-outline">중요도</span></label><br>
+                                높음&nbsp;<input type="radio" name="important" id="1" value="높음">
+                                보통&nbsp;<input type="radio" name="important" id="2" value="보통" checked>
+                                낮음&nbsp;<input type="radio" name="important" id="3" value="낮음">
+                            </p>
+                            <p>
+                                <label for="targets"><span class="label label-outline">업무 대상자</span></label><input type="hidden" name="targets"
+                                    class="form-control targets" value="" required id="id_targets">
+                                <select id='example-example-enableFiltering-enableClickableOptgroups'
+                                    multiple='multiple'>
+                                    <optgroup label='팀장'>
+                                        {% for item in target %}
+                                        {% if item.position.name == "팀장" %}
+                                        <option value='{{item.user}}'>{{item.user}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% for team in teams %}
+                                    <optgroup label='{{team.name}}'>
+                                        {% for item in target %}
+                                        {% if team.name == item.team.name %}
+                                        <option value='{{item.pk}}'>{{item.user}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <div class="input-group input-large" data-date="2014-01-01"
+                                    data-date-format="yyyy-mm-dd">
+                                    <input type="text" class="form-control dpd1" name="sdate" autocomplete="off"
+                                        id="id_sdate" required>
+                                    <span class="input-group-addon"> ~ </span>
+                                    <input type="text" class="form-control dpd2" name="edate" autocomplete="off"
+                                        id="id_edate" required>
+                                    <span class="input-group-addon">까지</span>
+                                </div>
+                            </p>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-theme" id="addArr">등록</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    {% endblock %}
+    {% block scripts %}
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+    <script src="{% static 'js/target.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/date.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+    <script type="text/javascript"
+        src="{% static 'lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-timepicker/js/bootstrap-timepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/advanced-form-components.js' %}"></script>
+    <script>
+         $(function () {
+            
+                $('[data-toggle="tooltip"]').tooltip();
+             
+           
+        });
+        $(document).ready(function () {
+
+            $("#addArr").click(function (e) {
+                if ($("#id_targets").val() == '') {
+                    swal.fire('대상자를 선택하세요.','','warning');
+                    e.preventDefault();
+                }
+            });
+            $(".close").removeClass("btn-block");
+            $(".multiselect-group.active").addClass("hide");
+        });
+
+        
+        var aa = "{{cd}}";
+        
+
+        for (i = 1; i <= 4; i++) {
+            var j = $('.condition'+i);
+        if (j.val() == aa) {
+            $(j).removeClass("btn-default");
+            $(j).addClass("btn-primary");
+            break;
+        }
+
+        }
+        
+
+       
+    </script>
+    {% endblock %}

@@ -1,0 +1,53 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>드림웨어</title>
+    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/gritter/css/jquery.gritter.css' %}" />
+    <link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+    <!-- css for todo -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/to-do.css' %}">
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+
+</head>
+
+<body>
+
+<section id="container" class="centered ">
+<div class="row mt " style="margin: 0 auto;">
+    
+    <div class="col-lg-12" >
+        
+        <div class="custom-box text-center">
+            <h4 class="mb-30 menu-inside"><img src="{% static '/img/glocal-logo-black.svg' %}" style="width: 50px; height: 50px; opacity: 0.8;"> <img src="{% static '/img/glocal-kr-black.svg' %}" style="width: 190px; height: 60px; opacity: 0.8;"> <b>사원등록</b></h4>
+            <div class="panel-heading">
+                <h3 class="text-center text-gray mb-30"><b>"사원등록이 완료되었습니다."</b></h3>
+                <br>
+                <p> 관리자 승인 완료 후 로그인 하실 수 있으며,</p>
+                <p><a class="text-underline-red">초기 패스워드는 주민등록번호 뒤 7자리 입니다.</a></p>
+                <p>로그인 후 반드시 패스워드를 변경해주시기 바랍니다.</p>
+                <p>감사합니다.</p>
+                <br><br>
+                <a onclick="javascript:window.close()">
+                    <button type="button" class="btn btn-default">
+                        닫기
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+</body>
+{% block scripts %}
+{% endblock %}

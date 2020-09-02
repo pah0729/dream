@@ -1,0 +1,573 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load home %}
+{% block title %}메인{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/fullcalendar/core/main.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/fullcalendar/daygrid/main.css' %}" rel="stylesheet" />
+<style>
+     .guide {position: fixed; top: 5%; left: 2%; right: 2%; z-index: 2040; width: 96%; min-height: 500px ; }
+    @media (min-width: 320px) and (max-width: 890px) { 
+    .none { width: 90%!important;}
+    }
+    @media  (max-width: 570px) { 
+    .dispnone { display: none!important;}
+    }
+
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <!-- 첫줄 row -->
+        <div class="row">
+            <!-- 바로가기 -->
+            <div class="col-md-8 col-sm-8 mb main-wrap dispnone">
+                <div class="white-panel pn2">
+                    <div class="white-header">
+                        <a class="font-size-normal font-weight-bold" style="padding-left: 1em;"><i class="fas fa-link"></i> 바로가기 링크 </a>
+                    </div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <div class="mt-5">
+                                <a href="http://glocal.or.kr/" target="_blank"><img src="{% static '/img/glocal-logo-black.svg' %}" style="width: 19px; height: 19px; opacity: 0.6;">글로컬 메인사이트</a>&nbsp; | &nbsp;<a href="http://webmail.glocal.or.kr/" target="_blank"><i class="far fa-envelope"></i> 글로컬 웹메일</a>&nbsp; | &nbsp;<a href="http://glocal.ipdisk.co.kr/" target="_blank"><i class="far fa-folder"></i> NAS</a>&nbsp; | &nbsp;<a href="https://drive.google.com/drive/folders/17SqUr4aW9NUcQMP9ePOVlZjVPZ_gaZeN" target="_blank"><i class="fab fa-google-drive"></i> Google Drive</a>&nbsp; | &nbsp;<a href="https://class.glocal.or.kr/" target="_blank"><i class="fas fa-book"></i> 수업관리</a>
+                            </div>
+                            <div class="mt-10">
+                                <a href="https://drive.google.com/open?id=1OIUfYQ2h6RvgENAHB_EzFpbHs7-kUCf28m3GBZa4pYA" target="_blank"><i class="far fa-file-alt"></i> 파일관리 매뉴얼</a>&nbsp; | &nbsp;<a data-toggle="modal" href="login.html#fileModal"><i class="far fa-lightbulb"></i> 업무자료관리 주의사항</a>&nbsp; | &nbsp;<a class="cursor-pointer" aria-expanded="false" onclick="window.open('{% url 'faq' %}','window_name','width=800,height=700,location=no,status=no,scrollbars=yes');"><i class="far fa-question-circle"></i> 드림웨어 FAQ</a> | &nbsp;<a class="cursor-pointer" aria-expanded="false" onclick="window.open('https://www.youtube.com/embed/9rqb5WXLzig','window_name','width=800,height=800,location=no,status=no,scrollbars=yes');"><i class="fab fa-youtube"></i> 드림웨어 이용가이드</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 날씨정보 -->
+            <div class="col-md-4 col-sm-4 mb main-wrap">
+                <div class="weather-2 pn2">
+                    <div class="row data">
+                        <div class="col-sm-6 col-xs-6 goleft mt-10">
+                            <div class="media-left td-middle" style="display: inline-block;">
+                                <figure class="text-center">
+                                    <span style="font-size: 40px"><i class="text-white" id="wIcon1"></i></span>
+                                    <br>
+                                    <span class="description font-weight-bold font-size-normal text-white" id="des1">-</span>
+                                </figure>
+                            </div>
+                            <div class="media-right td-middle" style="display: inline-block;">
+                                <div class="content text-left">
+                                    <figure>
+                                        <span class="font-weight-bold text-white" style="font-size: 18px;" id="deg1">°C</span>
+                                        <br>
+                                        <span class="font-weight-bold font-size-medium text-white" id="deg_m1">-°C / -°C</span>
+                                        <br>
+                                        <span class="font-weight-bold text-white" id="loca1">아산시</span>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-6 goright mt-10">
+                            <div class="media-left" style="display: inline-block;">
+                                <figure class="text-center">
+                                    <span style="font-size: 40px"><i class="text-white" id="wIcon2"></i></span>
+                                    <br>
+                                    <span class="description font-weight-bold font-size-normal text-white" id="des2">-</span>
+                                </figure>
+                            </div>
+                            <div class="media-right td-middle" style="display: inline-block; margin-top: 5px;">
+                                <div class="content text-left">
+                                    <figure>
+                                        <span class="font-weight-bold text-white" style="font-size: 18px;" id="deg2">°C</span>
+                                        <br>
+                                        <span class="font-weight-bold font-size-medium text-white" id="deg_m2">-°C / -°C</span>
+                                        <br>
+                                        <span class="font-weight-bold text-white" id="loca2">천안시</span>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 둘째줄 row -->
+        <div class="row">
+            <!-- 나의 공지 -->
+            <div class="col-md-8 col-sm-8 mb main-wrap">
+                <div class="white-panel pn">
+                    <div class="white-header" >
+                        <h5 style="font-weight: 700;">공지사항 <a class="pull-right" href="{% url 'notice:list' %}">&nbsp;<i class="fa fa-angle-right font-weight-bold">&nbsp;</i>&nbsp;</a></h5>
+                    </div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <table class="table table-hover noticelist text-gray">
+                                <tbody style="border-bottom: 1px solid #ddd;">
+                                    {% get_notices as notice_list %}
+                                    {% if not notice_list %}
+                                    <tr>
+                                        <td valign="top" colspan="10" class="dataTables_empty">데이터가 없습니다.</td>
+                                    </tr>
+                                    {% else %}
+                                    {% for post in notice_list %}
+                                        {% with progress=post.progressBar %}
+                                    <tr class="cursor-pointer" onclick="location.href='/notice/detail/{{ post.pk }}/'">
+                                        <td class="td-middle text-left" style="width:40%; max-width: 50px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px;"
+                                            class="title">
+                                            {% if post.important == "높음" %}
+                                            <span class="label label-danger font-size-medium td-middle">중요공지</span>
+                                            {% endif %}
+                                            {{ post.title }}
+                                            {% if post.comment_set.count != 0 %}
+                                            <span class="text-red font-weight-bold">[{{post.comment_set.count}}]</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="td-middle text-left" style="width:5%"><a class="">{{ post.user }}</a></td>
+                                        <td class="dispnone td-middle text-left" style="width:2%"><a class="font-size-small">{{ post.date | date:"Y.m.d" }}</a></td>
+                                        <td style="width:10%" class="dispnone td-middle">
+                                                {% if progress == 100 %}
+                                                <div class="progress progress-bar-primary"
+                                                    style="background-color: rgba(51,121,183,0.08)">
+                                                    <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;"
+                                                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}%
+                                                    </div>
+                                                </div>  
+                                                {% else %}
+                                                    <div class="progress progress-striped active">
+                                                    <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;"
+                                                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}%
+                                                    </div></div>
+                                                {% endif %}
+                                        </td>
+                                    </tr>
+                                        {% endwith %}
+                                    {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 사원현황 -->
+            <div class="col-md-4 col-sm-4 mb main-wrap">
+                <div class="white-panel pn" style="overflow: hidden;">
+                    {% get_attendance_count as count %}
+                    <div class="white-header" style="position: relative; z-index: 50;">
+                        <h5 style="font-weight: 700;">사원 현황 <a class="pull-right" href="{% url 'status' %}">&nbsp;<i class="fa fa-angle-right font-weight-bold">&nbsp;</i>&nbsp;</a></h5>
+                    </div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <table class="table" style="table-layout: fixed;">
+                                <tbody>
+                                    <tr style="height: 85px;">
+                                        <td style="border-top: 0; vertical-align: middle; width: 60%;" rowspan="2"><canvas id="chart" height="200"></canvas></td>
+                                        <td style="border-top: 0; border-right: 1px solid #ddd; vertical-align: middle;">
+                                            <div><a>출근</a></div>
+                                            <div><span style="font-weight: 800; font-size: 30px; color: #555;">{{count.attendance_count}}</span></div>
+                                        </td>
+                                        <td style="border-top: 0; vertical-align: middle;">
+                                            <div><a>외근</a></div>
+                                            <div><span style="font-weight: 800; font-size: 30px; color: #555;">{{count.workout_count}}</span></div>
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 85px;">
+                                        <td style="border-right: 1px solid #ddd; vertical-align: middle;">
+                                            <div><a>연차</a></div>
+                                            <div><span style="font-weight: 800; font-size: 30px; color: #555;">{{count.annual_count}}</span></div>
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            <div><a>퇴근</a></div>
+                                            <div><span style="font-weight: 800; font-size: 30px; color: #555;">{{count.leave_count}}</span></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 샛째줄 row -->
+        <div class="row">
+            <!-- 나의 todo -->
+            <div class="col-md-4 col-sm-4 mb main-wrap">
+                <div class="todo white-panel pn" style="height: 398px">
+                    <div class="white-header" >
+                        <h5 style="font-weight: 700;">TO-DO<a class="pull-right" href="{% url 'todo_list:todolist' %}">&nbsp;<i class="fa fa-angle-right font-weight-bold">&nbsp;</i>&nbsp;</a> </h5>
+                    </div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <div class="task-content">
+                                {% get_todoes as todo_list %}
+                                {% if not todo_list %}
+                                <ul id="sortable" class="task-list ui-sortable list">
+                                    <li class="list-success">
+                                        <ul class="task-title sc">
+                                            <li class="cut"><span>등록된 할 일이 없습니다.</span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                {% else %}
+                                <ul id="sortable" class="task-list ui-sortable list">
+                                    {% for post in todo_list %}
+                                    {% if post.important == "1" %}
+                                    <li class="list-danger">
+                                        {% elif post.important == "2" %}
+                                    <li class="list-primary">
+                                        {% else %}
+                                    <li class="list-warning">
+                                        {% endif %}
+                                        <ul class="task-title sc">
+                                            <li class="task-title-sp contents" style="width:75%"><span>{{ post.content }} &nbsp;</span></li>
+                                            <li class="pull-right hidden-phone " style="width:25%; "> 
+                                                <a style=" border-radius: 20px ; float: right; margin-top: 0.7rem; margin-right: 0.5rem; color: #5b636b!important;" class="label label-outline">+{{ post.checkday }}일</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 나의 project -->
+            <div class="col-md-4 col-sm-4 mb main-wrap">
+                <div class="white-panel pn" style="height: 398px">
+                    <div class="white-header" >
+                        <h5 style="font-weight: 700;">프로젝트<a class="pull-right"  href="{% url 'project:list' %}">&nbsp;<i class="fa fa-angle-right font-weight-bold">&nbsp;</i>&nbsp;</a></h5>
+                    </div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <table class="table table-hover list text-gray">
+                                <thead>
+                                    <tr>
+                                        <th class="font-size-medium font-weight-bold">프로젝트명</th>
+                                        <!-- <th class="font-size-medium font-weight-bold">작성자</th> -->
+                                        <th class="font-size-medium font-weight-bold">상태</th>
+                                        <th class="font-size-medium font-weight-bold">진행률</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% get_projects as project_list %}
+                                    {% if not project_list %}
+                                    <tr>
+                                        <td valign="top" colspan="10" class="dataTables_empty">데이터가 없습니다.</td>
+                                    </tr>
+                                    {% else %}
+                                    {% for post in project_list %}
+                                        {% with progress=post.progressBar %}
+                                    <tr class="cursor-pointer" onclick="location.href='/project/todo/{{ post.pk }}/'">
+                                        <td style="width:50%; vertical-align: middle; max-width: 50px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;text-align: left ; font-size: 13px;">
+                                            {{ post.title }}
+                                        </td>
+                                        <td class="font-size-small td-middle" style="width: 5%;"><span class="label label-outline">{{ post.condition }}</span></td>
+                                        <td style="width:20%; vertical-align: middle;">
+                                                {% if progress == None %}
+                                                <div class="progress progress-striped active">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;"
+                                                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">0%
+                                                </div>
+                                                {% elif progress == 100 %}
+                                            <div class="progress progress-bar-primary"
+                                                style="background-color: rgba(51,121,183,0.08)">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;"
+                                                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}%
+                                                </div>
+                                                </div>  
+                                                {% else %}
+                                                <div class="progress progress-striped active">
+                                                <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;"
+                                                    aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}%
+                                                </div></div>
+                                                {% endif %}
+                                        </td>
+                                    </tr>
+                                        {% endwith %}
+                                    {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- project 캘린더 -->
+            <div class="col-md-4 col-sm-4 mb main-wrap">
+                <div class="white-panel pn" style="height: 100%">
+                    <div class="white-header" >
+                        <h5 style="font-weight: 700;">프로젝트 스케줄<a class="pull-right nonebtn" href="{% url 'project:calendar' %}">&nbsp;<i class="fa fa-angle-right font-weight-bold">&nbsp;</i>&nbsp;</a></h5>
+                    </div>
+                    <div class="row">
+                        <div class="panel-body">
+                            <div id="calendar" class="has-toolbar"> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 자료관리 주의사항 모달 -->
+<div aria-hidden="true" aria-labelledby="fileModalLabel" role="dialog" tabindex="-1" id="fileModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" style="color: #2a2a2a;">×</button>
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="active">
+                        <a data-toggle="tab" href="#overview" >GOOGLE DRIVE 사용 시 주의사항</a>
+                        </li>
+                        <li>
+                        <a data-toggle="tab" href="#edit">NAS (웹 폴더) 사용 시 주의사항</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /panel-heading -->
+                <div class="panel-body">
+                    <div class="tab-content" style="font-size: 16px;">
+                        <div id="overview" class="tab-pane active">
+                            <div class="row">
+                                <div class="col-lg-12 detailed">
+                                    <ul class="menual font-size-normal" style="padding-left: 0px;">
+                                        <li><span>· 업무 관련 문서(자료)는 지정된 폴더 이외 저장 매체에 저장하실 수 없습니다.</span></li>
+                                        <li><span>· 업무 관련 문서(자료)는 절대 외부에 유출하시면 안됩니다.</span></li>
+                                        <li><span>· 구글 드라이브 폴더 및 문서 생성 시 '글로컬업무폴더' 내에서만 생성해주세요. </span></li>
+                                        <li><span>· 구글 드라이브 폴더 및 문서 생성 시 소유자는 '장석민(센터장님)'으로 변경해주세요.</span></li>
+                                        <li><span>· 자세한 사항은 '파일 관리 매뉴얼'을 참고해주세요. </span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="edit" class="tab-pane">
+                            <div class="row">
+                                <div class="col-lg-12 detailed">
+                                    <ul class="menual font-size-normal" style="padding-left: 0px;">
+                                        <li><span>· NAS는 반드시 구글 크롬 웹 브라우저를 사용하셔야 합니다. [<a href="https://www.google.com/intl/ko/chrome/"
+                                                    target="_blank"><b class="text-info">구글 크롬 다운로드</b></a>]</span></li>
+                                        <li><span>· 업무 관련 문서(자료)는 지정된 폴더 이외 저장 매체에 저장하실 수 없습니다.</span></li>
+                                        <li><span>· 업무 관련 문서(자료)는 절대 외부에 유출해선 안됩니다.</span></li>
+                                        <li><span>· NAS 개인 작업 폴더는 개인 노트북 자료 손실에 대비한 백업 공간입니다.</span></li>
+                                        <li><span>· 개인 작업 폴더 안의 업무와 관련되어 작성이 완료된 파일은 GOOGLE DRIVE에 올리거나 NAS의 관련 폴더로 이동시켜주세요. </span> </li>
+                                        <li><span>· 적은 양의 파일을 올릴 때는 해당 파일을 드래그하여 업로드 하시면 되고,<br>많은 양의 파일이나 폴더 전체를 업로드 하고싶다면 폴더들을 선택해 .zip 파일로
+                                                압축 후 드래그하여 업로드 후 <b>압축해제</b> 하시면 됩니다.</span></li>
+                                        <li><span>· NAS 사용 중 500 internal error 화면이 보일경우, 새로고침을 하신 후 다시 시도해주세요.</span></li>
+                                        <li><span>· 자세한 사항은 '파일 관리 매뉴얼'을 참고해주세요.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% get_attendance_count as count %}
+<script src="{% static 'lib/Chart.js/Chart.min.js' %}"></script>
+<script>
+new Chart(document.getElementById("chart"),
+        {
+            "type":"doughnut",
+            "data":{"labels":["출근","외근","연차","퇴근"],
+            "datasets":[{
+                "label":"My First Dataset",
+                "data":[{{count.attendance_count}},{{count.workout_count}},{{count.annual_count}},{{count.leave_count}}],
+                "backgroundColor":["rgb(54, 162, 235)","rgb(91, 192, 222)","rgb(255, 205, 86)","rgb(255, 99, 132)"]}
+            ]},
+            "options": {
+                "legend": {
+                    "labels": {
+                        fontfamily: 'NanumSquareRound',
+                    }
+                }
+            }
+        });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#hidden-table-info').dataTable({
+            "iDisplayLength": 7
+        });
+    })
+</script>
+<script type="text/javascript">
+	//쿠키설정	
+	function setCookie( name, value, expiredays )
+	{
+    var todayDate = new Date();
+    todayDate.setDate( todayDate.getDate() + expiredays );
+    document.cookie = name + '=' + escape( value ) + '; path=/; expires=' + todayDate.toGMTString() + ';'
+	}
+
+	//쿠키 불러오기
+	function getCookie(name) 
+	{ 
+	    var obj = name + "="; 
+	    var x = 0; 
+	    while ( x <= document.cookie.length ) 
+	    { 
+	        var y = (x+obj.length); 
+	        if ( document.cookie.substring( x, y ) == obj ) 
+	        { 
+	            if ((endOfCookie=document.cookie.indexOf( ";", y )) == -1 ) 
+	                endOfCookie = document.cookie.length;
+	            return unescape( document.cookie.substring( y, endOfCookie ) ); 
+	        } 
+	        x = document.cookie.indexOf( " ", x ) + 1; 
+	        if ( x == 0 ) 
+	            break; 
+	    } 
+	    return ""; 
+	}
+		
+    $(window).on('load', function () {
+            var aa = $(".todaynone");
+
+            $('.close').click(function () {
+                if (aa.is(":checked")) {
+                    {
+                        setCookie('close', 'true', 1);
+                    }
+                }
+                $(".none").hide();
+            });
+        });
+
+    $(document).ready(function(){
+        if(getCookie('close') != 'true'){
+            // console.log("hello")
+            $(".none").show();
+        }
+    });
+</script>
+<!--script for calender-->
+<script src="{% static 'lib/fullcalendar/core/main.js' %}"></script>
+<script src="{% static 'lib/fullcalendar/daygrid/main.js' %}"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: ['dayGrid'],
+            locale: 'ko',
+            displayEventTime: false,
+            eventLimit: true, // for all non-TimeGrid views
+            views: {
+                dayGrid: {
+                    eventLimit: 3 // adjust to 6 only for timeGridWeek/timeGridDay
+                }
+                },
+            events: [
+                {% get_project_calendar as eventlist %}
+                {% for post in eventlist %}
+                {% if post.condition == "진행" %}
+                {
+                    title: '{{ post.title }}',
+                    start: '{{post.sdate|date:"Y-m-d"}}T00:00:01',
+                    end: '{{post.edate|date:"Y-m-d"}}T23:59:59',
+                    url: '/project/todo/{{ post.pk }}/',
+                },
+    {% endif %}
+    {% endfor %}
+            ]
+
+          });
+
+    calendar.render();
+        });
+    var a = $("#main-content .wrapper .mb:nth-child(n+4) .pn");
+    var heightArray = a.map(function () {
+        return $(this).height();
+    }).get();
+    var b = $("#main-content .wrapper .mb:nth-child(6) .pn .panel-body");
+    var maxHeight = Math.max.apply(Math, heightArray);
+    a.height(maxHeight);
+</script>
+<script>
+    $(document).ready(function () {
+        var apiURI = "https://api.openweathermap.org/data/2.5/weather?q="+"asan"+"&units=metric"+"&appid="+"37bc9107ed5ca378fb24ccd9509d440e";
+        var apiURI2 = "https://api.openweathermap.org/data/2.5/weather?q="+"cheonan"+"&units=metric"+"&appid="+"37bc9107ed5ca378fb24ccd9509d440e";
+        $.ajax({
+            url: apiURI,
+            dataType: "json",
+            type: "GET",
+            async: "false",
+            success: function(resp) {
+                var imgURL = "https://openweathermap.org/img/w/" + resp.weather[0].icon + ".png";
+                // console.log(resp);
+                $("#deg1").text(Math.round(resp.main.temp) + "°C");
+                $("#deg_m1").text(Math.round(resp.main.temp_min) + "°C / " + Math.round(resp.main.temp_max) + "°C");
+                // $("#loca1").text(resp.name + ", " + resp.sys.country);
+                $("#des1").text(wDescEngToKor(resp.weather[0].id));
+                // $("#wimg1").attr("src", imgURL);
+                $("#wIcon1").addClass(wIconCnv(resp.weather[0].icon));
+            }
+        });
+        $.ajax({
+            url: apiURI2,
+            dataType: "json",
+            type: "GET",
+            async: "false",
+            success: function(resp) {
+                var imgURL2 = "https://openweathermap.org/img/w/" + resp.weather[0].icon + ".png";
+                // console.log(resp);
+                $("#deg2").text(Math.round(resp.main.temp) + "°C");
+                $("#deg_m2").text(Math.round(resp.main.temp_min) + "°C / " + Math.round(resp.main.temp_max) + "°C");
+                // $("#loca2").text(resp.name + ", " + resp.sys.country);
+                $("#des2").text(wDescEngToKor(resp.weather[0].id));
+                // $("#wimg2").attr("src", imgURL2);
+                $("#wIcon2").addClass(wIconCnv(resp.weather[0].icon));
+            }
+        });
+    });
+</script>
+<script>
+    // 날씨코드 한글화 스크립트
+    function wDescEngToKor(w_id) {
+            var w_id_arr = [201, 200, 202, 210, 211, 212, 221, 230, 231, 232,
+                300, 301, 302, 310, 311, 312, 313, 314, 321, 500,
+                501, 502, 503, 504, 511, 520, 521, 522, 531, 600,
+                601, 602, 611, 612, 615, 616, 620, 621, 622, 701,
+                711, 721, 731, 741, 751, 761, 762, 771, 781, 800,
+                801, 802, 803, 804, 900, 901, 902, 903, 904, 905,
+                906, 951, 952, 953, 954, 955, 956, 957, 958, 959,
+                960, 961, 962];
+            var w_kor_arr = ["뇌우", "뇌우", "뇌우", "천둥",
+                "천둥", "천둥", "천둥", "천둥", "천둥",
+                "뇌우", "비", "비", "비", "약한 비", "약한 비",
+                "약한 비", "소나기", "강한 소나기", "소나기", "약한 비", "비", "비",
+                "강한 비", "폭우", "우박", "약한 소나기", "소나기", "강한 소나기", "소나기",
+                "약한 눈", "눈", "강한 눈", "진눈깨비", "진눈깨비", "약한 비와 눈", "비와 눈", "약한 소낙눈",
+                "소낙눈", "강한 소낙눈", "안개", "스모그", "흐림", "약한 황사", "안개", "황사", "먼지", "화산재", "돌풍",
+                "토네이도", "맑음", "구름 조금", "구름 조금", "맑음",
+                "구름 많음", "토네이도", "태풍", "허리케인", "한랭", "고온", "바람", "우박", "바람 조금",
+                "바람 조금", "바람 조금", "바람", "바람", "강풍", "돌풍", "돌풍",
+                "돌풍", "폭풍", "강한 폭풍", "허리케인"];
+            for (var i = 0; i < w_id_arr.length; i++) {
+                if (w_id_arr[i] == w_id) {
+                    return w_kor_arr[i];
+                    break;
+                }
+            }
+            return "none";
+        };
+
+    // 날씨아이콘 변환 스크립트
+    function wIconCnv(w_icon) {
+            var w_icon_arr = ["01d", "02d", "03d", "04d", "09d", "10d", "11d", "13d", "50d", "01n", "02n", "03n", "04n", "09n", "10n", "11n", "13n", "50n"];
+            var w_fontIcon_arr = ["wi wi-day-sunny", "wi wi-day-cloudy", "wi wi-cloud", "wi wi-cloudy", "wi wi-rain", "wi wi-day-rain", "wi wi-thunderstorm", "wi wi-snow", "wi wi-fog", "wi wi-night-clear", "wi wi-night-alt-cloudy", "wi wi-cloud", "wi wi-cloudy", "wi wi-rain", "wi wi-night-alt-rain", "wi wi-thunderstorm", "wi wi-snow", "wi wi-fog"];
+            for (var i = 0; i < w_icon_arr.length; i++) {
+                if (w_icon_arr[i] == w_icon) {
+                    return w_fontIcon_arr[i];
+                    break;
+                }
+            }
+            return "none";
+        };
+</script>
+{% endblock %}}

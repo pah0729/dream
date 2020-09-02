@@ -1,0 +1,123 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>사원등록 | 드림웨어</title>
+    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/gritter/css/jquery.gritter.css' %}" />
+    <link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+    <!-- css for todo -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/multi-select.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/to-do.css' %}">
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link href="{% static 'lib/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-datepicker/css/datepicker.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-daterangepicker/daterangepicker.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'lib/bootstrap-timepicker/compiled/timepicker.css' %}" />
+    <style> 
+    .agree {float: right; margin:1em 0;}
+    </style>
+</head>
+<body>
+    <div class="col-md-12">
+        <div class="custom-box text-left">
+        <h4 class="mb-30 menu-inside text-center"><img src="{% static '/img/glocal-logo-black.svg' %}" style="width: 50px; height: 50px; opacity: 0.8;"> <img src="{% static '/img/glocal-kr-black.svg' %}" style="width: 190px; height: 60px; opacity: 0.8;"> <b>사원등록</b></h4>
+            <form class="form-horizontal style-form" method="post" >
+            {% csrf_token %}
+            {{ form.as_p }}     
+            <div class="col-lg-12 mt-30">
+                <div class="panel-heading" style="padding:0;">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="active">
+                            <a data-toggle="tab" href="#overview" >위치정보 이용약관</a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#google" class="contact-map">비밀유지 및 보안 약관</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content">
+                    <div id="overview" class="tab-pane active">
+                        {% include 'accounts/terms/location_info.html' %}
+                    </div>
+                    <div id="google" class="tab-pane">
+                        {% include 'accounts/terms/security.html' %}
+                    </div>
+                </div>         
+            </div>
+                <button type="submit" class="btn btn-theme btn-lg btn-block">등록</button>
+            </form>
+        </div>    
+    </div>
+    
+    <script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
+    <!-- <script src="{% static 'lib/jquery/jquery-3.2.1.min.js' %}"></script> -->
+    <script src="{% static 'lib/jquery-ui-1.9.2.custom.min.js' %}"></script>
+    <script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script src="{% static 'lib/jquery.cookie.js'%} "></script>
+    <script src="{% static 'lib/jquery.dcjqaccordion.2.7.js' %}"></script>
+    <script src="{% static 'lib/jquery.scrollTo.min.js' %}"></script>
+    <script src="{% static 'lib/jquery.nicescroll.js' %}" type="text/javascript"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'lib/advanced-datatable/js/jquery.dataTables.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/advanced-datatable/js/DT_bootstrap.js' %}"></script>
+    <script src="{% static 'lib/jquery.sparkline.js' %}"></script>
+    <!--common script for all pages-->
+    <script src="{% static 'lib/common-scripts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/gritter/js/jquery.gritter.js' %}"></script>
+    <script src="{% static 'lib/jquery.ui.touch-punch.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/gritter-conf.js' %}"></script>
+    <!--script for calendar page-->
+    <script src="{% static 'lib/zabuto_calendar.js' %}"></script>
+    <script src="{% static 'lib/orgchart.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'lib/sweetalert2/dist/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'lib/sweetalert2/sweet-alert.init.js' %}"></script>
+    {% if messages %}
+        {% for message in messages %}
+            <script> Swal.fire("", "{{ message|safe }}", "{{ message.tags }}"); </script> 
+        {% endfor %}
+    {% endif %}
+    <script type="text/javascript" src="{% static 'lib/bootstrap-fileupload/bootstrap-fileupload.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/date.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-daterangepicker/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'lib/bootstrap-timepicker/js/bootstrap-timepicker.js' %}"></script>
+    <script src="{% static 'lib/advanced-form-components.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+        $("#id_entry_date").addClass('default-date-picker');
+        $("#id_entry_date").attr('data-date-format','yyyy-mm-dd');
+        $('#id_entry_date').datepicker({dateFormat: 'yyyy-mm-dd'});
+        $(".style-form input, .style-form select").addClass('form-control');
+        $("input:radio").removeClass('form-control');
+        $('.form-control').css('margin-bottom','1em');
+        $("#id_phone").addClass('phone');
+        $("#id_residentNumber").addClass('regnum');
+    
+    });
+    $("button").click(function (e) {
+            if ($("input").val() != "") {
+                if ($("input[id=ok1]:checked").val() != "ok1") {
+                    swal.fire('','위치정보 이용약관 확인 후 동의해주세요.','warning');
+                    e.preventDefault(); 
+               
+                } else if($("input[id=ok2]:checked").val() != "ok2") {  
+                    swal.fire('','비밀유지 및 보안 약관 확인 후 동의해주세요.','warning');
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

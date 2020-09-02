@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}사원 정보 수정 - {{manage.user}}{% endblock title %}
+{% block content %}
+<div class="col-lg-12" >
+    <div class="col-lg-12 custom-box row text-left">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>사원 정보 수정</b></h4>
+        <div class="col-lg-12">
+            <label>이름</label>
+            <h5 class="font-weight-bold">{{manage.user}}</h5>
+            <br>
+            <form method="POST">{% csrf_token %}
+                {% bootstrap_form form%} 
+                <button type="submit" class="btn btn-theme btn-sm in-btn pull-right">수정</button>
+                <a class="btn btn-default btn-sm in-btn pull-right" href="{% url 'accounts:management'%}">목록</a>
+                <button type="submit" name="type" value="leave" class="btn btn-danger btn-sm in-btn pull-right" onclick="return confirm('퇴직처리 하시겠습니까?\n이 작업은 취소할 수 없습니다.')">퇴직처리</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

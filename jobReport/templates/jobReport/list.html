@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load accounts %}
+{% block title %}주간업무보고{% endblock title %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet">
+<style>
+  .table-bordered>tbody>tr>td {
+    vertical-align: middle
+  }
+
+  .td {
+    vertical-align: middle
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="col-lg-12">
+  <div class="content-panel row text-center">
+    <h4 class="mb-15 menu-inside text-left text-gray"><b>주간업무보고서</b></h4>
+    <div class="col-lg-12">
+      <!-- <section id="no-more-tables"> -->
+        <div class='pull-right mb-30'>
+        <a class="btn btn-default btn-sm pull-right mb-10 " href="{% url 'jobreport:new' %}"
+          style="margin-bottom: 0.5em;">주간업무보고서 작성</a>
+          <form method="GET">
+              <div class="input-field">
+                  <input class="pull-left" type="text" name="search" value="{{ request.GET.search }}" style="padding:3.6px 0; margin-right: 5px;">
+                  <button class="pull-left btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
+              </div>
+          </form>
+        </div>
+          <div class="form-inline pull-left mt-30 mb-15">
+            <form enctype="multipart/form-data">
+              <div>
+                <select class="form-control" name="team" id="team">
+                  <option value="전체">전체</option>
+                  {% get_team_list as teams %}
+                  {% for team in teams %}
+                  <option value="{{team.pk}}">{{team}}</option>
+                  {% endfor %}
+                </select>
+                <select class="form-control" name="year" id="year">
+                  <option value="">연도</option>
+                </select>
+                <select class="form-control" name="month" id="month">
+                  <option value="">월</option>
+                  <option value="01월">01월</option>
+                  <option value="02월">02월</option>
+                  <option value="03월">03월</option>
+                  <option value="04월">04월</option>
+                  <option value="05월">05월</option>
+                  <option value="06월">06월</option>
+                  <option value="07월">07월</option>
+                  <option value="08월">08월</option>
+                  <option value="09월">09월</option>
+                  <option value="10월">10월</option>
+                  <option value="11월">11월</option>
+                  <option value="12월">12월</option>
+                </select>
+                <select class="form-control" name="week" id="week">
+                  <option value="">주</option>
+                  <option value="1주">1주</option>
+                  <option value="2주">2주</option>
+                  <option value="3주">3주</option>
+                  <option value="4주">4주</option>
+                  <option value="5주">5주</option>
+                </select>
+
+              </div>
+            </form>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-scroll no-wrap table-hover table-condensed cf" id="hidden-table-info" align="center">
+              <thead class="cf" style="white-space:nowrap;">
+                <tr>
+                  <th class="numeric">팀</th>
+                  <th class="numeric">작성자</th>
+                  <th class="numeric">주차</th>
+                  <th class="numeric">기간</th>
+                </tr>
+              </thead>
+              <tbody style="white-space:nowrap;  vertical-align: middle;">
+                  {% if not list %}
+                  <tr>
+                      <td valign="top" colspan="10" class="dataTables_empty">데이터가 없습니다.</td>
+                  </tr>
+                  {% else %}
+                {% for post in list %}
+                <tr class="cursor-pointer" onclick="location.href='/jobreport/detail/{{ post.pk }}/'">
+                  <td class="numeric font-size-normal">
+                    {{ post.user.team }}
+                  </td>
+                  <td class="numeric" style="vertical-align: middle; font-weight: 700; font-size: 14px;">{{ post.user }}</td>
+                  <td class="numeric font-size-normal" style="vertical-align: middle;">{{ post.week_data }}</td>
+                  {% if post.sdate.year == post.edate.year %}
+                  <td class="numeric font-size-normal" style="vertical-align: middle;">{{ post.sdate|date:"Y-m-d" }}({{ post.sdate|date:"D"|cut:"요일" }}) ~ {{ post.edate|date:"m-d" }}({{ post.edate|date:"D"|cut:"요일" }})</td>
+                  {% else %}
+                  <td class="numeric font-size-normal" style="vertical-align: middle;">{{ post.sdate|date:"Y-m-d" }}({{ post.sdate|date:"D"|cut:"요일" }}) ~ {{ post.edate|date:"Y-m-d" }}({{ post.edate|date:"D"|cut:"요일" }})</td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          {% if list.has_other_pages %}
+          <ul class="pagination mt-30">
+            {% if list.has_previous %}
+            <li><a href="?page={{ list.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.team %}&team={{request.GET.team}}{% endif %}{% if request.GET.year %}&year={{request.GET.year}}{% endif %}{% if request.GET.month %}&month={{request.GET.month}}{% endif %}{% if request.GET.week %}&week={{request.GET.week}}{% endif %}">이전</a>
+            </li>
+            {% else %}
+            <li class="disabled"><span>이전</span></li>
+            {% endif %}
+            {% for i in page_range %}
+            {% if list.number == i %}
+            <li class="active"><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.team %}&team={{request.GET.team}}{% endif %}{% if request.GET.year %}&year={{request.GET.year}}{% endif %}{% if request.GET.month %}&month={{request.GET.month}}{% endif %}{% if request.GET.week %}&week={{request.GET.week}}{% endif %}">{{ i }}</a></li>
+            {% else %}
+            <li><a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.team %}&team={{request.GET.team}}{% endif %}{% if request.GET.year %}&year={{request.GET.year}}{% endif %}{% if request.GET.month %}&month={{request.GET.month}}{% endif %}{% if request.GET.week %}&week={{request.GET.week}}{% endif %}">{{ i }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if list.has_next %}
+            <li><a href="?page={{ list.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.year %}&year={{request.GET.year}}{% endif %}{% if request.GET.month %}&month={{request.GET.month}}{% endif %}{% if request.GET.week %}&week={{request.GET.week}}{% endif %}">다음</a>
+            </li>
+            {% else %}
+            <li class="disabled"><span>다음</span></li>
+            {%endif %}
+          </ul>
+        {%endif%}
+      <!-- </section> -->
+      </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    function getTodayType2() {
+      var date = new Date();
+      return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+    }
+
+    var fullYear = new Date().getFullYear();
+    var startYear = 2019
+    for (var i = fullYear; i >= startYear; i--) {
+        $("#year").append('<option value="' + i + '년">' + i + '년</option>');
+    }
+
+    $("#team").bind("change", function () {
+        if ($(this).val() != '') {
+          this.form.submit();
+        }
+    })
+
+    $("#year").bind("change", function () {
+      $("#month").val('');
+      $("#week").val('');
+    });
+
+    $("#month").bind("change", function () {
+        $("#week").val('');
+    });
+
+    $("#week").bind("change", function () {
+        if ($("#year").val() == '') {
+            Swal.fire('연도를 선택하세요.', '', 'warning');
+            $("#week").val('');
+        } else if ($("#month").val() == '') {
+            Swal.fire('월을 선택하세요.', '', 'warning');
+            $("#week").val('');
+        } else {
+            this.form.submit();
+        }
+    })
+    
+    var teamQuery = '{{ request.GET.team }}'
+    if (teamQuery == '' ) {
+      $("#team").val('전체');
+    } else {
+      $("#team").val('{{ request.GET.team }}');
+    }
+    $("#year").val('{{ request.GET.year }}');
+    $("#month").val('{{ request.GET.month }}');
+    $("#week").val('{{ request.GET.week }}');
+
+</script>
+{% endblock scripts %}

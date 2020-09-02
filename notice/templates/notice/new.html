@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}공지사항 등록{% endblock title %}
+{% block css %}
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+{% endblock css %}
+
+{% block content %}
+<div class="col-lg-12">
+    <div class="content-panel row">
+        <h4 class="mb-30 menu-inside text-left text-gray"><b>공지사항 등록</b></h4>
+        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <div class="col-lg-12 article">
+                <div class="article_header" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px">
+                    <h3 style="margin-left: 10px; color: #2a2a2a;"><input type="text" name="title" maxlength="50"
+                            class="form-control" placeholder="제목을 입력하세요" title="" required id="id_title"></h3>
+                </div>
+                <div class="article_target">
+                    <p>
+                        <span class="label label-outline">수신자 설정</span> 
+                        <label class="checkbox text-left font-size-normal" style="display: inline-block; margin-left: 30px; margin-top: 0; margin-bottom: 0; line-height: 23px;">
+                            <input type="checkbox"
+                                id="select_all">&nbsp;전 사원
+                        </label>
+                        <input type="hidden" name="targets" class="form-control targets" value="" required id="id_targets">
+                    </p>
+                </div>
+                
+                <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                    <p>{% include "accounts/target.html" %}</p>
+                </div>
+                <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                    <p>
+                        <span class="label label-outline">중요공지 설정</span> 
+                        <label class="checkbox text-left font-size-normal" style="display: inline-block; margin-left: 10px; margin-top: 0; margin-bottom: 0; line-height: 23px;">
+                            <input type="radio" name="important" id="1" value="높음"> <a class="text-red">중요</a>
+                        </label>
+                        <label class="checkbox text-left font-size-normal" style="display: inline-block; margin-left: 5px; margin-top: 0; margin-bottom: 0; line-height: 23px;">
+                            <input type="radio" name="important" id="2" value="보통" checked> 보통
+                        </label>
+                    </p>
+                </div>
+                <div class="article_body" style="margin-top: 20px;">
+                    {{form.media}}
+                    {{form.content}}
+                </div>
+                <div class="validate">
+                    <p class="font-size-medium text-info" style="padding-top:0.5em;">* 이미지 파일을 끌어다 놓으시거나, 편집기 내 이미지 버튼을 눌러 이미지 파일 선택 후 '서버로 전송' 버튼을 누르시면 본문에 이미지를 넣으실 수 있습니다. (jpg, png, gif 형식만 가능합니다.)</p>
+                </div>
+                <div class="article_info" style="margin-bottom: 10px;">
+                        <span class="label label-outline">태그등록</span>
+                </div>
+                <div class="article_info" style="border-bottom: 1px solid #e5e5e5; margin-bottom: 10px;">
+                    <p>
+                        <input type="text" class="form-control"  name="hashtag" maxlength="50" placeholder="ex) #행사 #출근부 #교육 #동호회" id="id_hashtag">
+                    </p>
+                    <div class="validate">
+                        <p class="font-size-medium text-info" style="padding-top:0.5em;">* 태그를 등록하시면 같은 분류의 공지사항을 한 눈에 확인 할 수 있습니다.</p>
+                    </div>
+                </div>
+                <div class="article_file mb-30 mt-10" style="border-bottom: 1px solid #e5e5e5;">
+                    <input id="addFile" class="btn btn-default" type="button" value="파일첨부" onclick=button_onclick()
+                        style="margin-bottom: 0.5em">
+                    <div class="validate">
+                        <p class="font-size-medium text-info" style="padding-top:0.5em;">* 5개까지 첨부하실 수 있습니다.</p>
+                    </div>
+                    <input class="form-control mt-10" type="file" name="file1" multiple class="" title="" id="id_file1"
+                        style="display:none">
+                    <input class="form-control mt-10" type="file" name="file2" multiple class="" title="" id="id_file2"
+                        style="display:none">
+                    <input class="form-control mt-10" type="file" name="file3" multiple class="" title="" id="id_file3"
+                        style="display:none">
+                    <input class="form-control mt-10" type="file" name="file4" multiple class="" title="" id="id_file4"
+                        style="display:none">
+                    <input class="form-control mt-10 mb-10" type="file" name="file5" multiple class="" title="" id="id_file5"
+                        style="display:none">
+                </div>
+                <button class="btn btn-theme btn-md pull-right in-btn" id="addArr">등록</button>
+                <a class="btn btn-default btn-sm pull-right in-btn" href="{% url 'notice:list' %}"><i class=" fa fa-arrow-left"></i> 목록</a>           
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'lib/multiSelect.js' %}"></script>
+<script src="{% static 'js/target.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script type="text/javascript">
+
+    var isShow = true; /* 페이지 벗어날때 붙잡기 */
+
+    $(window).on("beforeunload", function () {
+        if (isShow) return '이 페이지를 벗어나면 작성된 내용은 저장되지 않습니다.';
+    });
+
+    var count = 0;
+    function button_onclick() {
+        count++;
+        if (count == 1) {
+            $("#id_file1").css("display", "");
+        } else if (count == 2) {
+            $("#id_file2").css("display", "");
+        } else if (count == 3) {
+            $("#id_file3").css("display", "");
+        } else if (count == 4) {
+            $("#id_file4").css("display", "");
+        } else if (count == 5) {
+            $("#id_file5").css("display", "");
+        } else if (count > 5) {
+            swal.fire("파일은 5개까지 첨부할 수 있습니다.","","warning");
+        };
+    };
+
+    $(document).ready(function () {
+        $("#addArr").click(function (e) {
+        if ($("input:checkbox[id='select_all']").is(":checked") == true) {
+            $("#id_targets").val("전체선택");
+        }
+        if ($("#id_title").val() == '') {
+            swal.fire('제목을 입력하세요.','','warning');
+            e.preventDefault();
+            return false;
+        } else if ($("#id_targets").val() == '') {
+            swal.fire('대상자를 선택하세요.','','warning');
+            e.preventDefault();
+            return false;
+        } else if (CKEDITOR.instances.id_content.getData() == "") {
+            swal.fire('내용을 입력하세요.','','warning');
+            e.preventDefault();
+            return false;
+        } else {
+            isShow = false;
+        }
+    });
+
+    });
+
+CKEDITOR.replace('id_content',{
+ toolbar: [
+     ['Templates', 'Styles', 'Format', 'Font', 'FontSize'],
+     ['Undo', 'Redo', '-', 'Find', 'Replace'],
+     '/',
+     ['TextColor', 'BGColor', 'Bold', 'Italic', 'Underline', 'Strike', '-', 'Subscript', 'Superscript'],
+     ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+     ['NumberedList', 'BulletedList'],
+     ['Outdent', 'Indent'],
+     ['Youtube', 'Image', 'Table', 'HorizontalRule', 'Smiley'],
+     ['Link', 'Unlink', 'Anchor'],
+     ['Source', 'RemoveFormat', '-', 'Maximize']
+ ],
+ filebrowserImageUploadUrl: '{% url 'ckeditor_upload' %}',
+ imageUploadUrl: '{% url 'ckeditor_upload' %}',
+ height: 500,
+ width: '100%'
+});
+
+CKEDITOR.on('dialogDefinition', function( ev ) {
+    var diagName = ev.data.name;
+    var dialog = ev.data.definition.dialog;
+    var diagDefn = ev.data.definition;
+
+    if (diagName == 'image') {
+    dialog.on('show', function (obj) {
+        this.selectPage('Upload'); //업로드탭 기본으로
+    });
+    diagDefn.removeContents('advanced'); // 자세히탭 제거
+    diagDefn.removeContents('Link'); // 링크탭 제거
+    }
+
+    if(diagName === 'table') {
+      var infoTab = diagDefn.getContents('info');
+      var width = infoTab.get('txtWidth');
+      width['default'] = "100%";
+    }
+});
+
+</script>
+
+
+{% endblock %}

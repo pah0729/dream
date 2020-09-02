@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}패스워드 변경{% endblock title %}
+{% block content %}
+<div class="profile">
+    <div class="col-lg-12">
+        <div class="row custom-box">
+            <h4 class="mb-30 menu-inside text-left text-gray"><b>패스워드 변경</b></h4>
+            <div class="col-md-12">
+                <form method="post" action="" class="form-horizontal style-form">
+                    　　{% csrf_token %}
+                    　　<div>
+                    　　　　<input type="password" name="current_password" required="" placeholder="기존 패스워드" class="form-control">
+                    　　　　<input type="password" name="new_password" required="" placeholder="변경할 패스워드" class="form-control">
+                    　　　　<input type="password" name="password_confirm" required="" placeholder="변경할 패스워드 확인" class="form-control">
+                        　　</div>
+                    　　<button type="submit" class="btn btn-theme btn-block">패스워드 변경</button>
+                    　　{{ current_password_error }}　
+                    　　{{ new_password_error }}　
+                </form>
+                <a href="{% url 'accounts:profile' %}"><button class="btn btn-default btn-block">취소</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

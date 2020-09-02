@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}FAQ{% endblock title %}
+{% block css %}
+<style>
+    .header, #sidebar {
+        display: none;
+    }
+    #main-content {
+        margin-right: 0;
+    }
+
+    .wrapper {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+{% block content %}          
+<div class="md col-lg-12">
+    <div class="col-lg-12">
+        <div class="row content-panel">
+            <h2 class="centered">FAQ</h2>
+            <br>
+            <div align="center" class="col-lg-12 cat">
+                <button class="btn btn-default filter-button" data-filter="all">전체보기</button>
+                <button class="btn btn-default filter-button" data-filter="드림웨어">드림웨어</button>
+                <button class="btn btn-default filter-button" data-filter="계정">계정</button>
+                <button class="btn btn-default filter-button" data-filter="알림설정">알림설정</button>
+                <button class="btn btn-default filter-button" data-filter="출·퇴근">출·퇴근</button>
+                <button class="btn btn-default filter-button" data-filter="공지사항">공지사항</button>
+                <button class="btn btn-default filter-button" data-filter="프로젝트">프로젝트</button>
+                <button class="btn btn-default filter-button" data-filter="주간업무보고">주간업무보고</button>
+                <button class="btn btn-default filter-button" data-filter="todolist">todolist</button>
+                <button class="btn btn-default filter-button" data-filter="연차">연차</button>
+            </div>
+            <br><br><br>
+            <div id="addFaq"></div>
+            <div class="col-md-10 col-md-offset-1 mt mb">
+                <div class="accordion col-md-10 " id="accordion2">
+                    <div class="accordion-group">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+$(document).ready(function() { 
+    $('.filter-button').css("margin","2px 0");
+    $(".filter-button").click(function(){
+        $(".filter-button").css({'background':'none','color':'#333'});
+        $(this).css({'background':'#3d8cd0','color':'#fff'});
+        $(".collapse").removeClass("in");
+        var value = $(this).attr('data-filter');
+        if(value == "all"){
+            $('.filter').show('1000');
+        }else{
+            $(".filter").not('.'+value).hide('3000');
+            $('.filter').filter('.'+value).show('3000');
+        }
+    });
+   
+    $.getJSON('/static/faq.json', function(data) {
+        var html = '';
+        var categ = '';
+        $.each(data, function(entryIndex, entry) {
+            html += ' <div class="accordion-group ">';
+            html += ' <div class="accordion-heading col-md-12 filter '+entry.category+'"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="faq.html#collapse'+entryIndex+'" >' ;
+            html += ' <em class="glyphicon glyphicon-chevron-right icon-fixed-width question"></em> ';
+            html +=  '<b>['+entry.category+']</b>' + entry.Question +'</a> </div>';
+            html += '<div id="collapse'+entryIndex+'" class="accordion-body collapse col-md-10"> <div class="accordion-inner col-md-12 ">';
+            html +=  entry.answer + '</div> </div></div>';
+        });
+        $('#addFaq').html(html);  
+    });
+    return false;
+});
+
+</script>
+{% endblock scripts%} 

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load staticfiles %}
+{% block title %}결근 관리{% endblock title %}
+{% block content %}
+<div class="col-lg-12">
+  <div class="content-panel row " style="text-align: center">
+    <h4 class="mb-30 menu-inside text-left text-gray"><b>결근 관리</b></h4>
+    <div class="pull-right mb-10">
+      <a class="btn btn-default btn-sm " href="{% url 'commute:list' %}">출퇴근 기록</a>
+      </div>
+    <div class="col-lg-12" style="text-align: center">
+      <table class="table table-hover table-condensed cf" id="hidden-table-info" align="center">
+        <thead>
+          <tr>
+            <th scope="col">이름</th>
+            <th scope="col">팀</th>
+            <th scope="col">연차여부</th>
+            <th >관리</th>
+            <th style="display: none"></th>
+            <th style="display: none"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i, j in absenteeism %}
+          <tr>
+            <td class="font-weight-bold">{{ i }}</td>
+            <td class="font-size-normal">{{ i.team }}</td>
+            {% if j == 'o' %}
+            <td><span class="text-info font-size-normal font-weight-bold">연차</span></td>
+            {% else %}
+            <td><span class="text-gray font-size-normal font-weight-bold">연차 아님</span></td>
+            {% endif %}
+            <form method="POST">{% csrf_token %}
+              <td style="width:10%;">
+                <button type="submit" id="commuteAdd" class="btn btn-theme btn-sm"
+                    onclick="return confirm('결근 처리하시겠습니까?')">결근</button>
+              </td>
+              <td style="display: none"><input type="text" name="userName" value="{{ i }}" class="form-control"
+                  id="id_userName"></td>
+              <td style="display: none"></td>
+            </form>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+
+<script type="text/javascript">
+  $(document).ready(function () {
+
+    var nCloneTh = document.createElement('th');
+    var nCloneTd = document.createElement('td');
+    nCloneTd.innerHTML = '';
+    nCloneTd.className = "center";
+
+    $('#hidden-table-info thead tr').each(function () {
+      this.insertBefore(nCloneTh, this.childNodes[0]);
+    });
+
+    $('#hidden-table-info tbody tr').each(function () {
+      this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+    });
+
+    var oTable = $('#hidden-table-info').dataTable({
+      "aoColumnDefs": [{
+        "bSortable": false,
+        "aTargets": [0]
+      }],
+      "aaSorting": [
+        [0, 'asc']
+      ]
+    });
+  });
+
+</script>
+
+
+{% endblock %}
+{% block css %}
+<link href="{% static 'lib/advanced-datatable/css/demo_page.css' %}" rel="stylesheet" />
+<link href="{% static 'lib/advanced-datatable/css/demo_table.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'lib/advanced-datatable/css/DT_bootstrap.css' %}" />
+<link href="{% static 'css/table-responsive.css' %}" rel="stylesheet" />
+{% endblock css %}

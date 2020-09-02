@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="uyUh4MgJQPa5Um6-ejoXr9nEKs15v-sbdL_tqAomHxA" />
+    <meta name="keywords" content = "(사)글로컬드림아카데미, 글로컬드림아카데미, 드림웨어, dreamware, glocal dream academy, 그룹웨어, groupware">
+    <meta name ="description" content = "(사)글로컬드림아카데미의 그룹웨어 입니다.">
+    <title>로그인 | 드림웨어</title>
+
+    <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}"type="image/x-icon" >
+    <style>
+        #username::-webkit-input-placeholder { text-align:right; }
+    </style>
+</head>
+<body>
+    <div id="login-page">
+        <div class="container">        
+            <form class="form-login" method="post">
+            {% csrf_token %}             
+            {{ form.as_div }}
+            <h2 class="form-login-heading">
+                <a class="logo"><img src="{% static '/img/glocal-logo-white.svg' %}" style="width: 50px; height: 50px;"> <img src="{% static '/img/glocaldreamware.svg' %}" style="width: 140px; height: 50px;"></a>
+            </h2>
+                <div class="login-wrap text-gray">
+                    <label class="font-size-medium">아이디</label>
+                    <div class="input-group">
+                    <input type="text" class="form-control" name="username" id="username" autofocus required onkeyup="noSpaceForm(this);" onchange="noSpaceForm(this);" data-toggle="popover" data-placement="top" title="구글 아이디를 입력해주세요.">
+                    <span class="input-group-addon font-weight-bold">@gmail.com</span>
+                    </div>
+                    <label class="font-size-medium mt-15">패스워드</label>
+                    <input type="password" class="form-control" name="password" id="password" required>
+                    <label class="checkbox text-left font-size-medium" style="margin-left: 20px; line-height: 23px;">
+                        <input type="checkbox" id="idSaveCheck"> 아이디 기억하기
+                    </label>
+                    <!-- <small class="font-size-medium text-red"> * 패스워드 분실 시 관리자에게 문의 바랍니다.</small> -->
+                    <button class="btn btn-theme btn-block font-weight-bold mt-30" style="border-radius: 0;" type="submit"><i class="fas fa-sign-in-alt"></i> LOGIN</button>
+                    <hr class="text-gray mt-30">
+                    <div class="registration text-gray font-weight-normal font-size-normal mt-30 mb-15">
+                        <a class="font-weight-normal" data-toggle="modal" href="login.html#myModal">로그인 안내</a>&nbsp; | &nbsp;<a class="cursor-pointer font-weight-normal" aria-expanded="false" onclick="window.open('{% url 'accounts:join' %}','window_name','width=800,height=700,location=no,status=no,scrollbars=yes');">사원 등록</a>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">로그인 안내</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>신입 사원은 관리자 승인완료 후 로그인이 가능합니다.</p>
+                                <p>초기 패스워드는 주민등록번호 뒤 7자리 입니다.</p>
+                                <p>패스워드 분실 또는 로그인 불가 현상 발생 시</p>
+                                <p>SI팀으로 연락주시기 바랍니다. 감사합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'lib/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'lib/sweetalert2/dist/sweetalert2.all.min.js' %}"></script>
+<script src="{% static 'lib/sweetalert2/sweet-alert.init.js' %}"></script>
+<script src="{% static 'lib/jquery.backstretch.min.js' %}"></script>
+<script src="{% static 'js/idsave.js' %}"></script>
+<script>
+  $.backstretch("{% static 'img/class_bg.jpg' %}", {
+    fade: 750
+  });
+</script>
+{% if messages %}
+    {% for message in messages %}
+        <script> Swal.fire("알림", "{{ message|safe }}", "{{ message.tags }}"); </script> 
+    {% endfor %}
+{% endif %}
+<script>  
+function noSpaceForm(obj) { // 공백사용못하게
+    var str_space = /\s/;  // 공백체크
+    if(str_space.exec(obj.value)) { //공백 체크
+        obj.focus();
+        obj.value = obj.value.replace(' ',''); // 공백제거
+        return false;
+    }
+}
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+</body>
+</html>
